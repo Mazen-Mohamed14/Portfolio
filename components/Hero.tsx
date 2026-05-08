@@ -8,8 +8,10 @@ export default function Hero() {
       <div className="fixed top-[-30%] right-[-20%] w-[60vw] h-[60vw] rounded-full pointer-events-none z-0 bg-[radial-gradient(circle,rgba(124,58,237,0.12)_0%,transparent_70%)]" />
 
       <h1
-        className="animate-fade-up-1 font-display font-extrabold leading-[0.95] tracking-tight mb-6"
-        style={{ fontSize: "clamp(3.5rem, 8vw, 7rem)" }}
+        className="animate-fade-up-1 font-display font-extrabold tracking-tighter mb-6 
+               text-[clamp(1rem,10vw,7rem)]  lg:text-[clamp(2.5rem,14vw,7rem)] 
+               leading-[1.1] md:leading-[0.95] 
+               wrap-break-word"
       >
         Mazen
         <br />
@@ -18,7 +20,7 @@ export default function Hero() {
 
       <p className="animate-fade-up-2 text-muted max-w-xl leading-relaxed mb-10 font-light text-lg">
         Fullstack developer with 3+ years of experience crafting fast, accessible, and visually
-        sharp web applications — specializing in React, TypeScript, and Tailwind CSS.
+        sharp web applications, specializing in React, TypeScript, and Tailwind CSS.
       </p>
 
       <div className="animate-fade-up-3 flex flex-wrap gap-4">

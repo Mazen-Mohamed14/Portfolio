@@ -40,14 +40,14 @@ export default function Contact() {
       </div>
 
       <div className="relative bg-surface border border-border rounded-2xl p-8 md:p-14 overflow-hidden">
-        <div className="absolute top-[-50%] right-[-20%] w-125 h-125 rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(255,77,109,0.08)_0%,transparent_70%)]" />
+        {/* <div className="absolute top-[-50%] right-[-20%] w-125 h-125 rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(255,77,109,0.08)_0%,transparent_70%)]" /> */}
 
         <div className="grid md:grid-cols-2 gap-12 items-start relative">
           {/* Left */}
           <div>
             <p className="text-muted text-lg leading-relaxed font-light mb-8">
               Have a project in mind, a role to fill, or just want to say hello? My inbox is always
-              open — {"I'll"} get back to you within 24 hours.
+              open. {"I'll"} get back to you within 24 hours.
             </p>
             <div className="flex flex-col gap-3">
               {socials.map((s) => (
@@ -55,7 +55,7 @@ export default function Contact() {
                   key={s.label}
                   href={s.href}
                   target="_blank"
-                  className="flex items-center gap-3 px-5 py-4 rounded-xl border border-border bg-surface2 text-[#F0EEF8] text-sm transition-all duration-200 hover:border-accent1/30 hover:text-accent1 hover:translate-x-1"
+                  className="flex items-center break-all gap-3 px-5 py-4 rounded-xl border border-border bg-surface2 text-[#F0EEF8] text-sm transition-all duration-200 hover:border-accent1/30 hover:text-accent1 hover:translate-x-1"
                 >
                   <span className="w-5 text-center font-bold">{s.icon}</span>
                   {s.label}
