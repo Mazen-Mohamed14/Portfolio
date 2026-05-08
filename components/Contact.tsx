@@ -32,7 +32,7 @@ export default function Contact() {
     <section id="contact" className="py-28 px-6 md:px-12 max-w-6xl mx-auto">
       <div className="mb-16">
         <p className="flex items-center gap-2 text-accent1 text-xs font-medium tracking-[0.15em] uppercase mb-3 before:content-['//'] before:font-mono">
-          Let's talk
+          {"Let's"} talk
         </p>
         <h2 className="font-display font-extrabold text-4xl md:text-5xl leading-tight tracking-tight">
           Get in <span className="gradient-text">touch</span>
@@ -47,7 +47,7 @@ export default function Contact() {
           <div>
             <p className="text-muted text-lg leading-relaxed font-light mb-8">
               Have a project in mind, a role to fill, or just want to say hello? My inbox is always
-              open — I'll get back to you within 24 hours.
+              open — {"I'll"} get back to you within 24 hours.
             </p>
             <div className="flex flex-col gap-3">
               {socials.map((s) => (

@@ -5,7 +5,7 @@ export default function Projects() {
     <section id="projects" className="py-28 px-6 md:px-12 max-w-6xl mx-auto">
       <div className="mb-16">
         <p className="flex items-center gap-2 text-accent1 text-xs font-medium tracking-[0.15em] uppercase mb-3 before:content-['//'] before:font-mono">
-          What I've built
+          What {"I've"} built
         </p>
         <h2 className="font-display font-extrabold text-4xl md:text-5xl leading-tight tracking-tight">
           Featured <span className="gradient-text">projects</span>
