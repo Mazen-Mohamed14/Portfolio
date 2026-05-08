@@ -40,7 +40,7 @@ export default function Contact() {
       </div>
 
       <div className="relative bg-surface border border-border rounded-2xl p-8 md:p-14 overflow-hidden">
-        <div className="absolute top-[-50%] right-[-20%] w-[500px] h-[500px] rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(255,77,109,0.08)_0%,transparent_70%)]" />
+        <div className="absolute top-[-50%] right-[-20%] w-125 h-125 rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(255,77,109,0.08)_0%,transparent_70%)]" />
 
         <div className="grid md:grid-cols-2 gap-12 items-start relative">
           {/* Left */}

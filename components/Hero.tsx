@@ -17,8 +17,8 @@ export default function Hero() {
       </h1>
 
       <p className="animate-fade-up-2 text-muted max-w-xl leading-relaxed mb-10 font-light text-lg">
-        Frontend developer with 3+ years of experience crafting fast, accessible, and visually sharp
-        web applications — specializing in React, TypeScript, and Tailwind CSS.
+        Fullstack developer with 3+ years of experience crafting fast, accessible, and visually
+        sharp web applications — specializing in React, TypeScript, and Tailwind CSS.
       </p>
 
       <div className="animate-fade-up-3 flex flex-wrap gap-4">

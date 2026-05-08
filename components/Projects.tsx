@@ -8,22 +8,26 @@ export default function Projects() {
           What {"I've"} built
         </p>
         <h2 className="font-display font-extrabold text-4xl md:text-5xl leading-tight tracking-tight">
-          Featured <span className="gradient-text">projects</span>
+          Featured <span className="gradient-text">work</span>
         </h2>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project) => (
-          <div
+          <a
             key={project.title}
-            className="bg-surface border border-border rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:border-accent1/25 hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] group"
+            href={project.demo}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-surface border border-border rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:border-accent1/25 hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] group flex flex-col"
           >
             <div
-              className={`h-44 flex items-center justify-center text-6xl bg-gradient-to-br ${project.gradient}`}
+              className={`h-44 shrink-0 flex items-center justify-center text-6xl bg-linear-to-br ${project.gradient}`}
             >
               {project.emoji}
             </div>
-            <div className="p-6">
+
+            <div className="p-6 flex flex-col flex-1">
               <div className="flex flex-wrap gap-1.5 mb-4">
                 {project.tags.map((tag) => (
                   <span
@@ -34,26 +38,25 @@ export default function Projects() {
                   </span>
                 ))}
               </div>
+
               <h3 className="font-display font-bold text-xl mb-2">{project.title}</h3>
+
               <p className="text-muted text-sm leading-relaxed font-light mb-5">
                 {project.description}
               </p>
-              <div className="flex gap-4">
-                <a
-                  href={project.demo}
-                  className="text-sm text-muted hover:text-accent1 transition-colors flex items-center gap-1"
-                >
+
+              <div className="flex gap-4 mt-auto">
+                <div className="text-sm text-muted group-hover:text-accent1 transition-colors flex items-center gap-1">
                   ↗ Live demo
-                </a>
-                <a
-                  href={project.github}
-                  className="text-sm text-muted hover:text-accent1 transition-colors flex items-center gap-1"
-                >
-                  ⌥ GitHub
-                </a>
+                </div>
+                {project.github && (
+                  <div className="text-sm text-muted hover:text-accent1 transition-colors flex items-center gap-1">
+                    ⌥ GitHub
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </section>

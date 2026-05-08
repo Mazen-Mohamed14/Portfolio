@@ -22,7 +22,7 @@ export default function About() {
         <div className="space-y-5 text-muted leading-relaxed font-light text-lg">
           <p>
             Hey! {"I'm"} Mazen, a{" "}
-            <strong className="text-[#F0EEF8] font-medium">frontend developer</strong> based in
+            <strong className="text-[#F0EEF8] font-medium">fullstack developer</strong> based in
             Cairo, Egypt. I love turning complex problems into clean, intuitive interfaces that
             people actually enjoy using.
           </p>
