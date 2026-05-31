@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------ *
+ * Design tokens (Tailwind v4 @theme). These power every utility used
+ * across the app: bg-surface, border-border, text-muted, text-accent1,
+ * font-display, from-accent1, etc.
+ * ------------------------------------------------------------------ */
+@theme {
+  --color-background: #0a0a0f;
+  --color-surface: #14141f;
+  --color-surface2: #1c1c2b;
+  --color-border: rgba(240, 238, 248, 0.09);
+  --color-muted: #948fa6;
+
+  --color-accent1: #ff4d6d;
+  --color-accent2: #ff9f1c;
+  --color-accent3: #38b2ac;
+  --color-accent4: #7c3aed;
+
+  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
 :root {
   --c1: #ff4d6d;
   --c2: #ff9f1c;
@@ -8,8 +29,12 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     font-family: var(--font-dm-sans), sans-serif;
+    background-color: var(--color-background);
   }
   h1,
   h2,
@@ -17,8 +42,27 @@
   h4 {
     font-family: var(--font-syne), sans-serif;
   }
+  ::selection {
+    background: rgba(255, 77, 109, 0.3);
+    color: #fff;
+  }
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0a0a0f;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--c1), var(--c4));
+    border-radius: 999px;
+    border: 2px solid #0a0a0f;
+  }
 }
 
+/* ------------------------------------------------------------------ *
+ * Utilities
+ * ------------------------------------------------------------------ */
 @layer utilities {
   .gradient-text {
     @apply bg-clip-text text-transparent;
@@ -26,10 +70,71 @@
   }
   .gradient-text-full {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, var(--c1) 0%, var(--c2) 50%, #7c3aed 100%);
+    background-image: linear-gradient(135deg, var(--c1) 0%, var(--c2) 50%, var(--c4) 100%);
+  }
+  /* Continuously shifting gradient text */
+  .gradient-text-animate {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      120deg,
+      var(--c1) 0%,
+      var(--c2) 25%,
+      var(--c4) 50%,
+      var(--c3) 75%,
+      var(--c1) 100%
+    );
+    background-size: 300% 100%;
+    animation: gradient-pan 9s ease infinite;
+  }
+  /* Animated gradient border wrapper */
+  .glow-border {
+    position: relative;
+  }
+  .glow-border::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--c1), var(--c4), var(--c3));
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .glow-border:hover::before {
+    opacity: 1;
+  }
+  /* Spotlight that follows the cursor (uses --mx / --my set in JS) */
+  .spotlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      220px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, 0.07),
+      transparent 65%
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+  }
+  .spotlight:hover::after {
+    opacity: 1;
   }
 }
 
+/* ------------------------------------------------------------------ *
+ * Keyframes
+ * ------------------------------------------------------------------ */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -44,27 +149,142 @@
   0%,
   100% {
     opacity: 1;
+    box-shadow: 0 0 0 0 rgba(56, 178, 172, 0.6);
   }
   50% {
-    opacity: 0.3;
+    opacity: 0.6;
+    box-shadow: 0 0 0 6px rgba(56, 178, 172, 0);
+  }
+}
+@keyframes gradient-pan {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(4%, -6%) scale(1.08);
+  }
+  66% {
+    transform: translate(-5%, 4%) scale(0.95);
+  }
+}
+@keyframes float-slow-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-6%, 5%) scale(1.12);
+  }
+}
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(200%);
+  }
+}
+@keyframes scroll-dot {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
   }
 }
 
+/* ------------------------------------------------------------------ *
+ * Entrance helpers (initial above-the-fold load)
+ * ------------------------------------------------------------------ */
 .animate-fade-up {
-  animation: fadeUp 0.6s ease both;
+  animation: fadeUp 0.7s ease both;
 }
 .animate-fade-up-1 {
-  animation: fadeUp 0.6s 0.1s ease both;
+  animation: fadeUp 0.7s 0.05s ease both;
 }
 .animate-fade-up-2 {
-  animation: fadeUp 0.6s 0.2s ease both;
+  animation: fadeUp 0.7s 0.18s ease both;
 }
 .animate-fade-up-3 {
-  animation: fadeUp 0.6s 0.3s ease both;
+  animation: fadeUp 0.7s 0.32s ease both;
 }
 .animate-fade-up-5 {
-  animation: fadeUp 0.6s 0.5s ease both;
+  animation: fadeUp 0.7s 0.6s ease both;
 }
 .animate-pulse-dot {
-  animation: pulse-dot 2s infinite;
+  animation: pulse-dot 2.4s infinite;
+}
+.animate-bob {
+  animation: bob 2.6s ease-in-out infinite;
+}
+.animate-marquee {
+  animation: marquee 38s linear infinite;
+}
+
+/* ------------------------------------------------------------------ *
+ * Scroll reveal (driven by IntersectionObserver -> .in-view)
+ * ------------------------------------------------------------------ */
+.reveal {
+  opacity: 0;
+  transform: translateY(34px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 0.61, 0.21, 1),
+    transform 0.8s cubic-bezier(0.22, 0.61, 0.21, 1);
+  will-change: opacity, transform;
+}
+.reveal.in-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* ------------------------------------------------------------------ *
+ * Reduced motion
+ * ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }
