@@ -1,3 +1,4 @@
+import Background from "@/components/Background";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -7,13 +8,16 @@ import Contact from "@/components/Contact";
 
 export default function Home() {
   return (
-    <main className="bg-[#0A0A0F] text-[#F0EEF8] min-h-screen overflow-x-hidden">
+    <main className="relative bg-background text-[#F0EEF8] min-h-screen overflow-x-hidden">
+      <Background />
       <Navbar />
-      <Hero />
-      <About />
-      <Skills />
-      <Projects />
-      <Contact />
+      <div className="relative z-10">
+        <Hero />
+        <About />
+        <Skills />
+        <Projects />
+        <Contact />
+      </div>
     </main>
   );
 }
