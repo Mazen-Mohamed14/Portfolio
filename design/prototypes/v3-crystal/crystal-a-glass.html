@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mazen Mohamed — Crystal preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#04050a; --fg:#eef1f8; --muted:#8a90a6; --accent:#cfe8ff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { overflow-x:clip; }
+  body { background:var(--bg); color:var(--fg); font-family:'Inter',system-ui,sans-serif; }
+  canvas#gl { position:fixed; inset:0; width:100%; height:100%; z-index:0; display:block; }
+  .vig { position:fixed; inset:0; z-index:1; pointer-events:none; background:radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.7) 100%); }
+  nav { position:fixed; top:0; left:0; right:0; z-index:10; display:flex; justify-content:space-between; align-items:center; padding:22px clamp(16px,4vw,48px); font-size:14px; }
+  nav b { font-weight:500; letter-spacing:.02em; }
+  nav span { display:flex; gap:clamp(14px,3vw,28px); color:var(--muted); }
+  nav a { color:inherit; text-decoration:none; transition:color .3s; } nav a:hover { color:var(--fg); }
+  .dots { position:fixed; right:clamp(16px,3vw,36px); top:50%; transform:translateY(-50%); z-index:10; display:flex; flex-direction:column; gap:12px; }
+  .dots i { width:8px; height:8px; border-radius:50%; border:1px solid var(--muted); transition:background .5s, border-color .5s, transform .5s; }
+  .dots i.on { background:var(--accent); border-color:var(--accent); transform:scale(1.3); }
+  main { position:relative; z-index:5; }
+  section { min-height:100svh; display:flex; align-items:center; padding:0 clamp(16px,7vw,110px); }
+  section.r { justify-content:flex-end; }
+  .card { max-width:520px; }
+  h1, h2 { font-family:'Anton',Impact,sans-serif; font-weight:400; text-transform:uppercase; line-height:.92; letter-spacing:.005em; }
+  h1 { font-size:clamp(56px,10vw,150px); }
+  h2 { font-size:clamp(44px,7vw,104px); margin-bottom:22px; }
+  .glow { color:var(--accent); transition:color .8s; }
+  p { color:var(--muted); font-size:clamp(16px,1.3vw,18px); line-height:1.65; margin-top:20px; max-width:44ch; }
+  .list { list-style:none; margin-top:8px; border-top:1px solid rgba(255,255,255,.1); }
+  .list li { display:flex; justify-content:space-between; gap:16px; padding:15px 0; border-bottom:1px solid rgba(255,255,255,.1); font-size:17px; }
+  .list li span:last-child { color:var(--muted); font-size:14px; text-align:right; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .chips span { padding:8px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.14); font-size:14px; background:rgba(255,255,255,.03); }
+  .btns { display:flex; gap:12px; margin-top:30px; flex-wrap:wrap; }
+  .btn { padding:13px 22px; border-radius:999px; font-size:14px; text-decoration:none; color:var(--fg); border:1px solid rgba(255,255,255,.2); transition:border-color .3s, background .3s; }
+  .btn:hover { border-color:var(--accent); }
+  .btn.solid { background:var(--accent); color:#05060a; border-color:var(--accent); transition:background .8s, border-color .8s; }
+  .ar { font-family:'Inter',sans-serif; }
+  .hint { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:10; font-size:12px; color:var(--muted); letter-spacing:.04em; }
+  @media (max-width:720px){ section, section.r { justify-content:flex-start; align-items:flex-end; padding-bottom:90px; } .dots{display:none} }
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="vig"></div>
+<nav><b>MAZEN MOHAMED</b><span><a href="#work">Work</a><a href="#stack">Stack</a><a href="#contact">Contact</a></span></nav>
+<div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+<div class="hint">scroll · move your mouse</div>
+
+<main>
+  <section data-c="0">
+    <div class="card">
+      <h1>Full stack<br><span class="glow">developer</span></h1>
+      <p>Mazen Mohamed. I build SaaS and e-commerce products from database to deploy, in English and Arabic. Based in Cairo.</p>
+      <div class="btns"><a class="btn solid" href="#contact">Get in touch</a><a class="btn" href="#work">See the work</a></div>
+    </div>
+  </section>
+
+  <section id="work" class="r" data-c="1">
+    <div class="card">
+      <h2>Selected <span class="glow">work</span></h2>
+      <ul class="list">
+        <li><span>TrueForm</span><span>Multi-tenant SaaS form builder</span></li>
+        <li><span>DietHub</span><span>+320% organic traffic</span></li>
+        <li><span>Riverty</span><span>BNPL payment extension</span></li>
+        <li><span>TrueAgent</span><span>AI platform, in progress</span></li>
+      </ul>
+      <p style="font-size:14px">The prominent ones; more client and internal work on request.</p>
+    </div>
+  </section>
+
+  <section id="stack" data-c="2">
+    <div class="card">
+      <h2>The <span class="glow">stack</span></h2>
+      <div class="chips"><span>TypeScript</span><span>Next.js</span><span>React</span><span>Node.js</span><span>NestJS</span><span>PostgreSQL</span><span>Prisma</span><span>Stripe</span><span>OpenAI</span><span>Playwright</span><span>Docker</span></div>
+    </div>
+  </section>
+
+  <section class="r" data-c="3">
+    <div class="card">
+      <h2>English <span class="glow">&amp; عربي</span></h2>
+      <p>Bilingual products, right to left done properly: layouts that mirror, not just translated words.</p>
+    </div>
+  </section>
+
+  <section id="contact" data-c="4">
+    <div class="card">
+      <h2>Let's <span class="glow">talk</span></h2>
+      <p>Open to full stack and frontend roles. From Cairo, working anywhere.</p>
+      <div class="btns"><a class="btn solid" href="mailto:mazen.mohamed.saeed14@gmail.com">Email me</a><a class="btn" href="https://linkedin.com/in/mazenmohamed1">LinkedIn</a><a class="btn" href="https://github.com/Mazen-Mohamed14">GitHub</a></div>
+    </div>
+  </section>
+</main>
+
+<script type="importmap">{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const mobile = matchMedia('(max-width: 720px)').matches;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// one colour per section: intro, work, stack, arabic, contact
+const PALETTE = ['#cfe8ff', '#3d7bff', '#2fe39a', '#ffb23d', '#a46bff'].map(c => new THREE.Color(c));
+
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#04050a');
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+camera.position.set(0, 0, 11);
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.55;
+
+// ---------- the crystal: a faceted, elongated bipyramid ----------
+function crystalGeo(r = 1, h = 2.3, sides = 6) {
+  const profile = [ [0, -h], [r * 0.82, -h * 0.38], [r, h * 0.28], [r * 0.7, h * 0.52], [0, h] ]
+    .map(([x, y]) => new THREE.Vector2(x, y));
+  const g = new THREE.LatheGeometry(profile, sides);
+  const ng = g.toNonIndexed(); ng.computeVertexNormals();
+  return ng;
+}
+const group = new THREE.Group(); scene.add(group);
+
+const glass = new THREE.MeshPhysicalMaterial({
+  color: PALETTE[0].clone(), metalness: 0, roughness: 0.04,
+  transmission: 1, thickness: 1.6, ior: 1.6, dispersion: mobile ? 0 : 3.5,
+  attenuationColor: PALETTE[0].clone(), attenuationDistance: 2.2,
+  iridescence: 0.35, iridescenceIOR: 1.3, clearcoat: 1, clearcoatRoughness: 0.05,
+  specularIntensity: 1, envMapIntensity: 1.4, flatShading: true,
+});
+const crystal = new THREE.Mesh(crystalGeo(1, 2.3, 6), glass);
+group.add(crystal);
+
+// a glowing core the glass refracts
+const coreMat = new THREE.MeshBasicMaterial({ color: PALETTE[0].clone() });
+const core = new THREE.Mesh(new THREE.OctahedronGeometry(0.42, 0), coreMat);
+core.scale.set(0.7, 1.6, 0.7);
+group.add(core);
+
+// facet edges, faint
+const edges = new THREE.LineSegments(new THREE.EdgesGeometry(crystalGeo(1.003, 2.305, 6), 1),
+  new THREE.LineBasicMaterial({ color: PALETTE[0].clone(), transparent: true, opacity: 0.35 }));
+group.add(edges);
+
+// orbiting shards
+const shardMat = glass.clone(); shardMat.thickness = 0.5; shardMat.dispersion = 0;
+const shards = [];
+for (let i = 0; i < (mobile ? 5 : 8); i++) {
+  const s = new THREE.Mesh(crystalGeo(0.16 + Math.random() * 0.12, 0.35 + Math.random() * 0.25, 5), shardMat);
+  s.userData = { r: 2.1 + Math.random() * 1.2, a: Math.random() * 6.28, y: (Math.random() - 0.5) * 3, sp: 0.15 + Math.random() * 0.25, rot: Math.random() * 2 };
+  group.add(s); shards.push(s);
+}
+
+// floating motes of light
+const N = mobile ? 300 : 900, pos = new Float32Array(N * 3), seed = new Float32Array(N);
+for (let i = 0; i < N; i++) { pos[i*3] = (Math.random()-.5)*16; pos[i*3+1] = (Math.random()-.5)*10; pos[i*3+2] = (Math.random()-.5)*8 - 2; seed[i] = Math.random(); }
+const moteGeo = new THREE.BufferGeometry();
+moteGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+moteGeo.setAttribute('seed', new THREE.BufferAttribute(seed, 1));
+const moteMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  uniforms: { uT: { value: 0 }, uC: { value: PALETTE[0].clone() }, uPR: { value: renderer.getPixelRatio() } },
+  vertexShader: `attribute float seed; uniform float uT, uPR; varying float vA;
+    void main(){ vec3 p = position; p.y += mod(uT*0.15*(0.5+seed) + seed*10.0, 10.0) - 5.0 - position.y*0.0;
+      p.x += sin(uT*0.3 + seed*20.0)*0.3;
+      vec4 mv = modelViewMatrix * vec4(p,1.0); gl_Position = projectionMatrix * mv;
+      gl_PointSize = (1.0 + seed*2.5) * uPR * (8.0 / -mv.z); vA = 0.25 + 0.6*seed; }`,
+  fragmentShader: `uniform vec3 uC; varying float vA;
+    void main(){ float r = length(gl_PointCoord-.5); if(r>.5) discard; gl_FragColor = vec4(uC, smoothstep(.5,0.,r)*vA); }`
+});
+scene.add(new THREE.Points(moteGeo, moteMat));
+
+// light: coloured key lights that follow the section colour
+const key = new THREE.PointLight(PALETTE[0].clone(), 40, 20); key.position.set(3, 3, 4); scene.add(key);
+const rim = new THREE.PointLight(PALETTE[0].clone(), 30, 20); rim.position.set(-4, -2, -3); scene.add(rim);
+scene.add(new THREE.AmbientLight(0xffffff, 0.15));
+
+// a soft pool of light under the crystal
+const poolTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+  const g = x.createRadialGradient(64,64,0,64,64,64); g.addColorStop(0,'rgba(255,255,255,.9)'); g.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle = g; x.fillRect(0,0,128,128); return new THREE.CanvasTexture(c); })();
+const pool = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), new THREE.MeshBasicMaterial({ map: poolTex, color: PALETTE[0].clone(), transparent: true, opacity: 0.35, depthWrite: false, blending: THREE.AdditiveBlending }));
+pool.rotation.x = -Math.PI / 2; pool.position.y = -3.1; group.add(pool);
+
+// bloom
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), mobile ? 0.55 : 0.8, 0.6, 0.15);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+// ---------- scroll + colour ----------
+const sections = [...document.querySelectorAll('section')];
+const dots = [...document.querySelectorAll('#dots i')];
+let progress = 0, cur = 0, mx = 0, my = 0, smx = 0, smy = 0, spinBoost = 0, lastIdx = 0;
+function onScroll() {
+  const max = document.documentElement.scrollHeight - innerHeight;
+  progress = max > 0 ? Math.max(0, Math.min(1, scrollY / max)) * (sections.length - 1) : 0;
+}
+addEventListener('scroll', onScroll, { passive: true });
+addEventListener('pointermove', e => { mx = e.clientX / innerWidth * 2 - 1; my = e.clientY / innerHeight * 2 - 1; });
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false); composer.setSize(w, h); bloom.resolution.set(w, h);
+  camera.aspect = w / h; camera.position.z = w / h < 1 ? 15 : 11; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize(); onScroll();
+
+const tmp = new THREE.Color();
+function colourAt(p) {
+  p = Math.max(0, Math.min(PALETTE.length - 1, p || 0));
+  const i = Math.min(PALETTE.length - 2, Math.floor(p)), f = p - i;
+  const e = f < .35 ? 0 : f > .65 ? 1 : (f - .35) / .3;           // hold colour while a section is on screen
+  return tmp.copy(PALETTE[i]).lerp(PALETTE[i + 1], e * e * (3 - 2 * e));
+}
+
+const clock = new THREE.Clock();
+(function loop() {
+  const dt = Math.min(clock.getDelta(), .05), t = reduce ? 0 : clock.elapsedTime;
+  cur += (progress - cur) * Math.min(1, dt * 4.5);
+  const c = colourAt(cur);
+  glass.attenuationColor.copy(c); glass.color.copy(c).lerp(new THREE.Color(1,1,1), .55);
+  shardMat.attenuationColor.copy(c); shardMat.color.copy(glass.color);
+  coreMat.color.copy(c).multiplyScalar(1.6);
+  edges.material.color.copy(c); key.color.copy(c); rim.color.copy(c);
+  moteMat.uniforms.uC.value.copy(c); pool.material.color.copy(c);
+  document.documentElement.style.setProperty('--accent', '#' + c.getHexString());
+
+  const idx = Math.round(cur);
+  if (idx !== lastIdx) { spinBoost = 2.2; lastIdx = idx; dots.forEach((d, i) => d.classList.toggle('on', i === idx)); }
+  spinBoost *= Math.exp(-dt * 2.2);
+
+  // crystal sits opposite the text
+  const wide = innerWidth > 720, side = idx % 2 === 0 ? 1 : -1;
+  const halfW = Math.tan(camera.fov * Math.PI / 360) * camera.position.z * camera.aspect;
+  group.scale.setScalar(Math.min(1, halfW / 5.2));
+  group.position.x += ((wide ? side * halfW * 0.5 : 0) - group.position.x) * dt * 3.5;
+  group.position.y = Math.sin(t * 0.8) * 0.15 + (wide ? 0 : 1.2);
+  crystal.rotation.y += dt * (0.25 + spinBoost);
+  edges.rotation.y = core.rotation.y = crystal.rotation.y;
+  core.rotation.y *= -1;
+  smx += (mx - smx) * dt * 3; smy += (my - smy) * dt * 3;
+  group.rotation.x = smy * 0.18; group.rotation.z = -smx * 0.12;
+  shards.forEach(s => { const u = s.userData; u.a += dt * u.sp * (1 + spinBoost);
+    s.position.set(Math.cos(u.a) * u.r, u.y + Math.sin(t * .6 + u.rot) * .2, Math.sin(u.a) * u.r * .6);
+    s.rotation.set(t * .5 + u.rot, t * .7, 0); });
+  moteMat.uniforms.uT.value = t;
+  composer.render();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

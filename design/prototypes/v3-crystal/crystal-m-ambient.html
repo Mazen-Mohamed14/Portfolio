@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mazen Mohamed — Crystal preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#04050a; --fg:#eef1f8; --muted:#a3abc0; --body:#d3d8e6; --accent:#cfe8ff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { overflow-x:clip; }
+  body { background:var(--bg); color:var(--fg); font-family:'Inter',system-ui,sans-serif; }
+  canvas#gl { position:fixed; inset:0; width:100%; height:100%; z-index:0; display:block; }
+  .vig { position:fixed; inset:0; z-index:1; pointer-events:none; background:radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.7) 100%); }
+  nav { position:fixed; top:0; left:0; right:0; z-index:10; display:flex; justify-content:space-between; align-items:center; padding:22px clamp(16px,4vw,48px); font-size:14px; }
+  nav b { font-weight:500; letter-spacing:.02em; }
+  nav span { display:flex; gap:clamp(14px,3vw,28px); color:var(--muted); }
+  nav a { color:inherit; text-decoration:none; transition:color .3s; } nav a:hover { color:var(--fg); }
+  .dots { position:fixed; right:clamp(16px,3vw,36px); top:50%; transform:translateY(-50%); z-index:10; display:flex; flex-direction:column; gap:12px; }
+  .dots i { width:8px; height:8px; border-radius:50%; border:1px solid var(--muted); transition:background .5s, border-color .5s, transform .5s; }
+  .dots i.on { background:var(--accent); border-color:var(--accent); transform:scale(1.3); }
+  main { position:relative; z-index:5; }
+  section { min-height:100svh; display:flex; align-items:center; padding:96px clamp(16px,7vw,110px) 64px; }
+  section.r { justify-content:flex-end; }
+  .card { max-width:min(520px, 46vw); }
+  h1, h2 { font-family:'Anton',Impact,sans-serif; font-weight:400; text-transform:uppercase; line-height:.92; letter-spacing:.005em; }
+  h1 { font-size:clamp(56px,10vw,150px); }
+  h2 { font-size:clamp(44px,7vw,104px); margin-bottom:22px; }
+  .glow { color:var(--accent); transition:color .8s; }
+  p { color:var(--body); font-size:clamp(16px,1.35vw,19px); line-height:1.7; margin-top:20px; max-width:46ch; text-shadow:0 1px 14px rgba(0,0,0,.65); }
+  .list { list-style:none; margin-top:8px; border-top:1px solid rgba(255,255,255,.1); }
+  .list li { display:flex; justify-content:space-between; gap:16px; padding:15px 0; border-bottom:1px solid rgba(255,255,255,.1); font-size:17px; }
+  .list li span:last-child { color:var(--muted); font-size:14px; text-align:right; }
+  .list.work li { display:block; padding:12px 0; }
+  .list.work a { display:flex; justify-content:space-between; align-items:baseline; gap:12px; color:var(--fg); text-decoration:none; }
+  .list.work .pn { font-size:clamp(20px,2vw,26px); color:var(--fg); text-align:left; transition:color .3s; }
+  .list.work .ar { color:var(--muted); margin-left:8px; font-size:.8em; display:inline-block; transition:color .3s, transform .3s; }
+  .list.work em { font-style:normal; font-size:13px; color:var(--accent); border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:3px 10px; white-space:nowrap; transition:color .8s; }
+  .list.work a:hover .pn, .list.work a:hover .ar { color:var(--accent); }
+  .list.work a:hover .ar { transform:translate(3px,-3px); }
+  .list.work .pd { margin-top:4px; font-size:15px; color:var(--body); line-height:1.5; max-width:none; }
+  .list.work .ps { margin-top:4px; font-size:13px; color:var(--muted); }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .chips span { padding:8px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.14); font-size:14px; background:rgba(255,255,255,.03); }
+  .btns { display:flex; gap:12px; margin-top:30px; flex-wrap:wrap; }
+  .btn { padding:13px 22px; border-radius:999px; font-size:14px; text-decoration:none; color:var(--fg); border:1px solid rgba(255,255,255,.2); transition:border-color .3s, background .3s; }
+  .btn:hover { border-color:var(--accent); }
+  .btn.solid { background:var(--accent); color:#05060a; border-color:var(--accent); transition:background .8s, border-color .8s; }
+  .sound { position:fixed; right:clamp(16px,4vw,48px); bottom:18px; z-index:12; display:flex; align-items:center; gap:10px; padding:9px 14px; border-radius:999px;
+    border:1px solid rgba(255,255,255,.16); background:rgba(4,5,10,.5); color:var(--muted); font:500 12px 'Inter',sans-serif; letter-spacing:.03em; cursor:pointer; transition:color .3s, border-color .3s; }
+  .sound:hover, .sound[aria-pressed="true"] { color:var(--fg); border-color:var(--accent); }
+  .sound:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .sound i { display:flex; align-items:flex-end; gap:2px; height:12px; }
+  .sound b { width:2px; height:3px; background:currentColor; border-radius:1px; }
+  .sound[aria-pressed="true"] b { background:var(--accent); animation:eq 1s ease-in-out infinite; }
+  .sound b:nth-child(2) { animation-delay:-.3s; } .sound b:nth-child(3) { animation-delay:-.6s; } .sound b:nth-child(4) { animation-delay:-.15s; }
+  @keyframes eq { 0%,100% { height:3px; } 50% { height:12px; } }
+  @media (max-width:720px){ section, section.r { justify-content:flex-start; align-items:flex-end; padding-bottom:90px; } .card{max-width:100%; background:rgba(4,5,10,.62); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); border-radius:18px; padding:18px 16px; margin:0 -8px} .dots{display:none} }
+  .no-gl canvas#gl { display:none; }
+  .no-gl body::before { content:''; position:fixed; z-index:0; pointer-events:none; right:4%; top:9vh; height:82vh; aspect-ratio:500/760;
+    background:url('crystal-poster.jpg') center / cover; -webkit-mask-image:radial-gradient(ellipse 50% 50% at center, #000 45%, transparent 100%); mask-image:radial-gradient(ellipse 50% 50% at center, #000 45%, transparent 100%); }
+  @media (max-width:720px){ .no-gl body::before { right:auto; left:50%; transform:translateX(-50%); top:6vh; height:46vh; } }
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important} .sound b{animation:none!important} }
+</style>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="vig"></div>
+<nav><b>MAZEN MOHAMED</b><span><a href="#work">Work</a><a href="#stack">Stack</a><a href="#experience">Experience</a><a href="#contact">Contact</a><a href="Mazen-Mohamed-CV.pdf" target="_blank" rel="noopener">Resume</a></span></nav>
+<div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+<button class="sound" id="sound" type="button" aria-pressed="false" aria-label="Toggle music"><i aria-hidden="true"><b></b><b></b><b></b><b></b></i><span>Sound off</span></button>
+
+<main>
+  <section data-c="0">
+    <div class="card">
+      <h1>Full stack<br><span class="glow">developer</span></h1>
+      <p>Mazen Mohamed. I build web products from database to deploy. Based in Cairo.</p>
+      <div class="btns"><a class="btn solid" href="#contact">Get in touch</a><a class="btn" href="Mazen-Mohamed-CV.pdf" target="_blank" rel="noopener">Resume</a></div>
+    </div>
+  </section>
+
+  <section id="work" data-c="1">
+    <div class="card">
+      <h2>Selected <span class="glow">work</span></h2>
+      <ul class="list work">
+        <li><a href="https://trueform.cultivbureau.com/" target="_blank" rel="noopener"><span class="pn">TrueForm<span class="ar">↗</span></span></a>
+          <p class="pd">Multi-tenant SaaS form &amp; exam builder. Led the frontend: drag-and-drop builder, AI-graded voice answers, Stripe billing.</p><p class="ps">Next.js · NestJS · PostgreSQL</p></li>
+        <li><a href="https://diethubeg.com/" target="_blank" rel="noopener"><span class="pn">DietHub<span class="ar">↗</span></span><em>+320% organic traffic</em></a>
+          <p class="pd">Led the portal revamp and built its CMS, with SEO and performance work.</p><p class="ps">React · Tailwind CSS</p></li>
+        <li><a href="https://bureau.cultiv.llc/" target="_blank" rel="noopener"><span class="pn">Bureau<span class="ar">↗</span></span></a>
+          <p class="pd">Responsive corporate website with custom animations.</p><p class="ps">React · Tailwind CSS</p></li>
+        <li><a href="https://www.riverty.com/en/" target="_blank" rel="noopener"><span class="pn">Riverty<span class="ar">↗</span></span></a>
+          <p class="pd">Buy-now-pay-later checkout extension. Delivered its PrestaShop integration and new checkout features.</p><p class="ps">Magento · PrestaShop · at Scandiweb</p></li>
+      </ul>
+      <p style="font-size:14px">The prominent ones; more on request.</p>
+    </div>
+  </section>
+
+  <section id="stack" data-c="2">
+    <div class="card">
+      <h2>The <span class="glow">stack</span></h2>
+      <div class="chips"><span>TypeScript</span><span>Next.js</span><span>React</span><span>Node.js</span><span>NestJS</span><span>PostgreSQL</span><span>Prisma</span><span>Stripe</span><span>OpenAI</span><span>Playwright</span><span>Docker</span></div>
+    </div>
+  </section>
+
+
+  <section id="experience" data-c="3">
+    <div class="card">
+      <h2>The <span class="glow">journey</span></h2>
+      <ul class="list">
+        <li><span>Cultiv LLC</span><span>Full Stack Developer · 2024 – now · Cairo</span></li>
+        <li><span>Scandiweb</span><span>Full Stack Developer · 2022 – 2024 · Remote, Latvia</span></li>
+      </ul>
+      <p>Over four years shipping production SaaS and e-commerce, and now mentoring a junior developer through code review and pairing.</p>
+    </div>
+  </section>
+
+  <section id="contact" data-c="4">
+    <div class="card">
+      <h2>Let's <span class="glow">talk</span></h2>
+      <p>Open to full stack and frontend roles. From Cairo, working anywhere.</p>
+      <div class="btns"><a class="btn solid" href="mailto:mazen.mohamed.saeed14@gmail.com">Email me</a><a class="btn" href="https://linkedin.com/in/mazenmohamed1">LinkedIn</a><a class="btn" href="https://github.com/Mazen-Mohamed14">GitHub</a><a class="btn" href="Mazen-Mohamed-CV.pdf" target="_blank" rel="noopener">Resume</a></div>
+    </div>
+  </section>
+</main>
+
+<script type="importmap">{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }</script>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const mobile = matchMedia('(max-width: 720px)').matches;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// phones and weaker machines get a lighter scene: no bloom pass, 1x resolution, fewer nebula layers and sparkles
+const lowEnd = mobile || (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
+const OCTAVES = lowEnd ? 3 : 5;
+
+// per section: crystal colour, nebula colour, how much opal rainbow
+const SECTIONS = [
+  { c: '#9fbfff', n: '#6b2cff', iri: 0.9, g: 1.0 },  // intro: opal white on violet nebula
+  { c: '#ffb43d', n: '#8a2a08', iri: 0.35, g: 1.0 }, // work: amber
+  { c: '#2fe3a0', n: '#06506a', iri: 0.35, g: 1.05 }, // stack: emerald
+  { c: '#2f86ff', n: '#0b2a9e', iri: 0.35, g: 1.5 }, // experience: deep blue (darker hue, lifted to match)
+  { c: '#b77bff', n: '#c2338f', iri: 0.6, g: 1.4 },  // contact: amethyst (darker hue, lifted to match)
+].map(s => ({ c: new THREE.Color(s.c), n: new THREE.Color(s.n), iri: s.iri, g: s.g }));
+
+const canvas = document.getElementById('gl');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !lowEnd, powerPreference: 'high-performance' }); }
+catch (e) { document.documentElement.classList.add('no-gl'); throw e; }
+renderer.setPixelRatio(lowEnd ? 1 : Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0x020309, 1);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.9;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 200);
+camera.position.set(0, 0, 12);
+
+const U = { uT: { value: 0 }, uC: { value: new THREE.Color() }, uN: { value: new THREE.Color() }, uIri: { value: 1 }, uGain: { value: 1 } };
+
+// ---------- nebula + stars, one full-screen plane far behind ----------
+const nebula = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+  depthWrite: false, depthTest: false, uniforms: U,
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.9999, 1.0); }`,
+  fragmentShader: `
+    uniform float uT; uniform vec3 uC, uN; varying vec2 vUv;
+    float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f);
+      return mix(mix(h(i), h(i+vec2(1,0)), f.x), mix(h(i+vec2(0,1)), h(i+vec2(1,1)), f.x), f.y); }
+    float fbm(vec2 p){ float v = 0., a = .5; for (int i = 0; i < ${OCTAVES}; i++){ v += a*n(p); p = p*2.03 + 7.1; a *= .5; } return v; }
+    void main(){
+      vec2 p = vUv * vec2(1.8, 1.0);
+      float t = uT * 0.015;
+      float clouds = fbm(p*2.2 + vec2(t, -t*.6) + fbm(p*3. - t)*1.4);
+      float band = exp(-pow((vUv.x - 0.62) * 2.6, 2.)) * 0.7 + 0.3;
+      vec3 col = uN * pow(clouds, 3.2) * .9 * band + uC * pow(clouds, 7.) * .25 * band;
+      // stars
+      vec2 g = vUv * vec2(260., 150.); vec2 id = floor(g);
+      float s = step(.985, h(id)) * smoothstep(.5, 0., length(fract(g) - .5)) * (.5 + .5*sin(uT*2. + h(id+3.)*40.));
+      col += vec3(s) * .9;
+      gl_FragColor = vec4(col, 1.);
+    }`
+}));
+nebula.frustumCulled = false; nebula.renderOrder = -10;
+scene.add(nebula);
+
+const group = new THREE.Group(); scene.add(group);
+
+// ---------- the crystal: a long two-pointed gem with many facets ----------
+function gemGeometry() {
+  const N = 10, Ht = 2.7, Hb = 1.7, R = 0.95;
+  const rings = [ // y, radius, twist
+    { y: -Hb * 0.45, r: R * 0.62, tw: 0.5 },
+    { y: 0, r: R, tw: 0 },
+    { y: Ht * 0.3, r: R * 0.78, tw: 0.5 },
+    { y: Ht * 0.62, r: R * 0.42, tw: 0 },
+  ];
+  const ring = (k) => Array.from({ length: N }, (_, i) => {
+    const a = (i + rings[k].tw) / N * Math.PI * 2, j = 1 + (Math.sin(i * 12.9 + k * 3.1) * 0.06);
+    return new THREE.Vector3(Math.cos(a) * rings[k].r * j, rings[k].y, Math.sin(a) * rings[k].r * j);
+  });
+  const R0 = rings.map((_, k) => ring(k)), top = new THREE.Vector3(0, Ht, 0), bot = new THREE.Vector3(0, -Hb, 0);
+  const tris = [];
+  for (let i = 0; i < N; i++) { const j = (i + 1) % N;
+    tris.push([bot, R0[0][j], R0[0][i]]);
+    for (let k = 0; k < rings.length - 1; k++) {
+      const A = R0[k], B = R0[k + 1];
+      if (rings[k + 1].tw > rings[k].tw) { tris.push([A[i], A[j], B[i]], [A[j], B[j], B[i]]); }
+      else { tris.push([A[i], B[j], B[i]], [A[i], A[j], B[j]]); }
+    }
+    tris.push([R0[rings.length - 1][i], R0[rings.length - 1][j], top]);
+  }
+  const pos = [], face = [];
+  tris.forEach((t) => { const r = Math.random(); const n = new THREE.Vector3().subVectors(t[1], t[0]).cross(new THREE.Vector3().subVectors(t[2], t[0]));
+    const m = new THREE.Vector3().add(t[0]).add(t[1]).add(t[2]).divideScalar(3); if (n.dot(m) < 0) t = [t[0], t[2], t[1]];
+    t.forEach(v => { pos.push(v.x, v.y, v.z); face.push(r); }); });
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('face', new THREE.Float32BufferAttribute(face, 1));
+  g.computeVertexNormals();
+  return g;
+}
+const gem = gemGeometry();
+
+const gemVert = `
+  attribute float face; varying vec3 vWN, vWP, vO; varying float vF;
+  void main(){ vO = position; vF = face;
+    vec4 wp = modelMatrix * vec4(position, 1.0); vWP = wp.xyz;
+    vWN = normalize(mat3(modelMatrix) * normal);
+    gl_Position = projectionMatrix * viewMatrix * wp; }`;
+// a procedural studio: soft boxes and a ring light, fixed in the world, so facets flash as the gem turns
+const gemCommon = `
+  uniform float uT, uIri, uGain; uniform vec3 uC; varying vec3 vWN, vWP, vO; varying float vF;
+  vec3 hue(float h){ return clamp(abs(mod(h*6.+vec3(0,4,2),6.)-3.)-1., 0., 1.); }
+  float box(vec3 d, vec3 L, float k){ return pow(max(dot(d, normalize(L)), 0.), k); }
+  vec3 studio(vec3 d){
+    float e = box(d, vec3(.55,.75,.6), 18.) * 1.3 + box(d, vec3(-.75,.35,.45), 12.) * .8
+            + box(d, vec3(.15,-.55,.8), 10.) * .6 + box(d, vec3(-.2,.9,-.4), 14.) * .6;
+    e += smoothstep(.25, 0., abs(d.y - .28)) * .25;
+    return mix(uC, vec3(1.), .45) * e + mix(uC * .12, uC * .45, d.y * .5 + .5);
+  }
+  // what light looks like inside the gem along a direction: the core, tinted by the section colour
+  vec3 inside(vec3 d, float core){
+    float beam = pow(max(dot(d, normalize(vec3(.2,.6,.5))), 0.), 6.);
+    return uC * (.42 + 1.05 * core) + mix(uC, vec3(1.), .5) * beam * .9 + studio(d) * .18;
+  }`;
+const gemFrag = `${gemCommon}
+  void main(){
+    vec3 V = normalize(cameraPosition - vWP);
+    vec3 N = normalize(vWN) * (gl_FrontFacing ? 1. : -1.);
+    float cosT = clamp(dot(N, V), 0., 1.);
+    float F = .06 + .94 * pow(1. - cosT, 5.);
+    float core = exp(-length((vO - vec3(0., -.2, 0.)) * vec3(1.1, .5, 1.1)) * 1.15);
+    // dispersion: each colour bends a little differently
+    vec3 rr = refract(-V, N, 1./2.36), rg = refract(-V, N, 1./2.42), rb = refract(-V, N, 1./2.5);
+    vec3 body = vec3(inside(rr, core).r, inside(rg, core).g, inside(rb, core).b);
+    vec3 refl = studio(reflect(-V, N));
+    float facet = 1.;
+    vec3 col = body * facet * (1. - F) + refl * (F + .12);
+    // opal sheen
+    vec3 opal = hue(fract(dot(N, vec3(.35,.6,.25)) * 1.3 + vO.y * .1 + uT * .02));
+    col += opal * pow(1. - cosT, 2.) * (.15 + .7 * uIri);
+    col = mix(col, col * mix(vec3(1.), opal, .5), uIri * .35);
+    // a glint now and then on single facets
+    col += mix(uC, vec3(1.), .6) * (.08 + .08 * sin(vO.y * 2.5 - uT * 1.4));
+    gl_FragColor = vec4(col * uGain, clamp(.72 + .28 * F + .2 * core, 0., 1.));
+  }`;
+const gemBackFrag = `${gemCommon}
+  void main(){
+    vec3 V = normalize(cameraPosition - vWP);
+    float core = exp(-length((vO - vec3(0., -.35, 0.)) * vec3(1.25, .7, 1.25)) * 1.6);
+    vec3 col = uC * (.2 + 1.6 * core) * 1. + studio(reflect(-V, -normalize(vWN))) * .25;
+    gl_FragColor = vec4(col * .6 * uGain, 1.);
+  }`;
+const gemBack = new THREE.Mesh(gem, new THREE.ShaderMaterial({ uniforms: U, vertexShader: gemVert, fragmentShader: gemBackFrag, transparent: true, side: THREE.BackSide, depthWrite: false, blending: THREE.AdditiveBlending }));
+const gemFront = new THREE.Mesh(gem, new THREE.ShaderMaterial({ uniforms: U, vertexShader: gemVert, fragmentShader: gemFrag, transparent: true, side: THREE.FrontSide, depthWrite: false }));
+// a smaller gem turning the other way inside, for depth
+const inner = new THREE.Mesh(gem, new THREE.ShaderMaterial({ uniforms: U, vertexShader: gemVert, fragmentShader: gemBackFrag, transparent: true, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending, opacity: .5 }));
+inner.scale.set(.45, .55, .45); inner.position.y = -.1;
+const gemEdges = new THREE.LineSegments(new THREE.EdgesGeometry(gem, 1), new THREE.ShaderMaterial({ uniforms: U, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `varying float vY; void main(){ vY = position.y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }`,
+  fragmentShader: `uniform vec3 uC; varying float vY; void main(){ gl_FragColor = vec4(mix(uC, vec3(1.), .6) * (.3 + .2*sin(vY*3.)), .5); }` }));
+const crystal = new THREE.Group(); crystal.add(gemBack, gemFront, gemEdges); group.add(crystal);
+
+// ---------- sprites: halo, inner light with a star flare ----------
+function radial(stops, size = 256) {
+  const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d');
+  const g = x.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+  stops.forEach(([o, a]) => g.addColorStop(o, `rgba(255,255,255,${a})`)); x.fillStyle = g; x.fillRect(0, 0, size, size);
+  return new THREE.CanvasTexture(c);
+}
+function flare(size = 256) {
+  const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d'), m = size / 2;
+  const g = x.createRadialGradient(m, m, 0, m, m, m * .5); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = g; x.fillRect(0, 0, size, size);
+  x.globalCompositeOperation = 'lighter';
+  for (const [w, h] of [[size, 6], [6, size * .8]]) { const l = x.createRadialGradient(m, m, 0, m, m, Math.max(w, h) / 2);
+    l.addColorStop(0, 'rgba(255,255,255,.9)'); l.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = l; x.fillRect(m - w / 2, m - h / 2, w, h); }
+  return new THREE.CanvasTexture(c);
+}
+const sprite = (tex, s, op) => { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: op }));
+  m.scale.set(s, s, 1); return m; };
+const halo = sprite(radial([[0, .5], [.3, .12], [1, 0]]), 6.5, .16); halo.position.z = -1.5; group.add(halo);
+const coreGlow = sprite(flare(), 1.2, .45); coreGlow.position.set(0, -0.35, 0.3); group.add(coreGlow);
+const tipGlow = sprite(radial([[0, 1], [.2, .4], [1, 0]]), .5, .7); tipGlow.position.set(0, 2.7, 0.1); group.add(tipGlow);
+
+
+
+// ---------- sparkles near the crystal ----------
+const SP = lowEnd ? 200 : 600, spPos = new Float32Array(SP * 3), spSeed = new Float32Array(SP);
+for (let i = 0; i < SP; i++) { const a = Math.random() * 6.283, r = 0.6 + Math.pow(Math.random(), .6) * 4;
+  spPos[i*3] = Math.cos(a) * r; spPos[i*3+1] = (Math.random() - .5) * 7; spPos[i*3+2] = Math.sin(a) * r * .6; spSeed[i] = Math.random(); }
+const spGeo = new THREE.BufferGeometry();
+spGeo.setAttribute('position', new THREE.BufferAttribute(spPos, 3));
+spGeo.setAttribute('seed', new THREE.BufferAttribute(spSeed, 1));
+const sparkles = new THREE.Points(spGeo, new THREE.ShaderMaterial({ uniforms: { ...U, uPR: { value: renderer.getPixelRatio() } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `attribute float seed; uniform float uT, uPR; varying float vA;
+    void main(){ vec3 p = position; p.y += sin(uT*.4 + seed*30.)*.25; p.xz *= 1. + .03*sin(uT + seed*9.);
+      vec4 mv = modelViewMatrix * vec4(p,1.); gl_Position = projectionMatrix * mv;
+      float tw = pow(.5 + .5*sin(uT*(1.5 + seed*3.) + seed*60.), 6.);
+      gl_PointSize = (1. + 3.5*tw) * uPR * (10. / -mv.z); vA = .15 + .85*tw; }`,
+  fragmentShader: `uniform vec3 uC; varying float vA;
+    void main(){ vec2 q = gl_PointCoord - .5; float r = length(q); if (r > .5) discard;
+      float star = max(0., 1. - abs(q.x)*14.) * max(0., 1. - abs(q.y)*2.) + max(0., 1. - abs(q.y)*14.) * max(0., 1. - abs(q.x)*2.);
+      gl_FragColor = vec4(mix(uC, vec3(1.), .55), (smoothstep(.5, 0., r)*.8 + star*.6) * vA); }` }));
+group.add(sparkles);
+
+// bloom
+let composer = null, bloom = null;
+if (!lowEnd) {
+  composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), .7, .55, .35);
+  composer.addPass(bloom);
+  composer.addPass(new OutputPass());
+}
+const draw = () => composer ? composer.render() : renderer.render(scene, camera);
+
+// ---------- scroll + colour ----------
+const sections = [...document.querySelectorAll('section')];
+const dots = [...document.querySelectorAll('#dots i')];
+let first = true, progress = 0, cur = 0, mx = 0, my = 0, smx = 0, smy = 0, spinBoost = 0, lastIdx = 0;
+function onScroll() {
+  const max = document.documentElement.scrollHeight - innerHeight;
+  progress = max > 0 ? Math.max(0, Math.min(1, scrollY / max)) * (sections.length - 1) : 0;
+}
+addEventListener('scroll', onScroll, { passive: true });
+addEventListener('pointermove', e => { mx = e.clientX / innerWidth * 2 - 1; my = e.clientY / innerHeight * 2 - 1; });
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false); if (composer) { composer.setSize(w, h); bloom.resolution.set(w, h); }
+  camera.aspect = w / h; camera.position.z = w / h < 1 ? 16 : 12; camera.updateProjectionMatrix();
+}
+resize(); onScroll();
+
+function blendAt(p) {
+  p = Math.max(0, Math.min(SECTIONS.length - 1, p || 0));
+  const i = Math.min(SECTIONS.length - 2, Math.floor(p)), f = p - i;
+  let e = f < .35 ? 0 : f > .65 ? 1 : (f - .35) / .3; e = e * e * (3 - 2 * e);
+  const A = SECTIONS[i], B = SECTIONS[i + 1];
+  U.uC.value.copy(A.c).lerp(B.c, e); U.uN.value.copy(A.n).lerp(B.n, e); U.uIri.value = A.iri + (B.iri - A.iri) * e; U.uGain.value = A.g + (B.g - A.g) * e;
+}
+const tint = (m, c) => m.material.color.copy(c);
+
+const clock = new THREE.Clock();
+function frame() {
+  const dt = Math.min(clock.getDelta(), .05), t = reduce ? 4 : clock.elapsedTime;
+  cur = reduce ? progress : cur + (progress - cur) * Math.min(1, dt * 4.5);
+  blendAt(cur); U.uT.value = t;
+  const c = U.uC.value;
+  tint(halo, c); halo.material.opacity = .16 * U.uGain.value; tint(coreGlow, new THREE.Color(1, 1, 1).lerp(c, .45)); tint(tipGlow, new THREE.Color(1, 1, 1).lerp(c, .3));
+  document.documentElement.style.setProperty('--accent', '#' + new THREE.Color(1, 1, 1).lerp(c, .8).getHexString());
+
+  const idx = Math.round(cur);
+  if (idx !== lastIdx) { spinBoost = reduce ? 0 : 2.5; lastIdx = idx; dots.forEach((d, i) => d.classList.toggle('on', i === idx)); dispatchEvent(new CustomEvent('crystal:section', { detail: idx })); }
+  spinBoost *= Math.exp(-dt * 2.2);
+
+  const wide = innerWidth > 720, side = 1;
+  const halfW = Math.tan(camera.fov * Math.PI / 360) * camera.position.z * camera.aspect;
+  group.scale.setScalar(Math.min(1, halfW / 5.6));
+  const gx = wide ? side * halfW * .56 : 0;
+  group.position.x = (first || reduce) ? gx : group.position.x + (gx - group.position.x) * dt * 3.5; first = false;
+  group.position.y = (wide ? -0.2 : 1.6) + Math.sin(t * .8) * .12;
+  crystal.rotation.y = reduce ? .6 : crystal.rotation.y + dt * (.3 + spinBoost);
+  coreGlow.material.opacity = .4 + .08 * Math.sin(t * 2.3);
+  smx += (mx - smx) * dt * 3; smy += (my - smy) * dt * 3;
+  group.rotation.x = smy * .12; group.rotation.z = -smx * .08 + Math.sin(t * .5) * .03;
+  draw();
+}
+// runs every frame while the tab is visible; with reduced motion it only redraws when something changes
+let running = false;
+function loop() { if (document.hidden) { running = false; return; } frame(); requestAnimationFrame(loop); }
+function start() { if (!running && !reduce) { running = true; clock.getDelta(); requestAnimationFrame(loop); } }
+let pending = false;
+const still = () => { if (pending) return; pending = true; requestAnimationFrame(() => { pending = false; frame(); }); };
+document.addEventListener('visibilitychange', () => { if (!document.hidden) start(); });
+addEventListener('resize', () => { resize(); if (reduce) still(); });
+if (reduce) { addEventListener('scroll', still, { passive: true }); still(); } else start();
+</script>
+<script>
+/* Original ambient score, generated live with the Web Audio API.
+   Cinematic rather than retro: soft glass keys, evolving pads, sub bass, stereo echoes, a long wide reverb.
+   Off by default; each crystal colour has its own key, chord loop and tempo. */
+(() => {
+  const btn = document.getElementById('sound');
+  const label = btn.querySelector('span');
+  // chords as MIDI notes, low to high, voiced wide with 9ths and 11ths
+  const SONGS = [
+    { bpm: 64, chords: [[38, 50, 57, 61, 64, 69], [35, 47, 54, 57, 62, 66], [31, 43, 50, 54, 57, 64], [33, 45, 52, 57, 59, 64]] }, // intro: Dmaj9, Bm11, Gmaj9, Asus
+    { bpm: 68, chords: [[29, 41, 48, 52, 55, 60], [26, 38, 45, 48, 53, 57], [34, 46, 53, 57, 60, 65], [36, 48, 55, 58, 62, 67]] }, // work: Fmaj9, Dm9, Bbmaj9, C9sus
+    { bpm: 72, chords: [[28, 40, 47, 51, 54, 59], [25, 37, 44, 47, 52, 56], [33, 45, 52, 56, 59, 64], [35, 47, 54, 56, 61, 66]] }, // stack: Emaj9, C#m11, Amaj9, Badd9
+    { bpm: 60, chords: [[34, 46, 53, 57, 60, 65], [31, 43, 50, 53, 58, 62], [27, 39, 46, 50, 53, 58], [29, 41, 48, 51, 55, 60]] }, // journey: Bbmaj9, Gm11, Ebmaj9, F9sus
+    { bpm: 58, chords: [[33, 45, 52, 56, 59, 64], [28, 40, 47, 51, 54, 59], [30, 42, 49, 52, 57, 61], [37, 49, 56, 59, 63, 68]] }, // contact: Amaj9, Emaj9, F#m11, C#m9
+  ];
+  const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  let ctx = null, master, bus, verbSend, delaySend, on = false, section = 0, pending = 0, bar = 0, step = 0, nextTime = 0, timer = null;
+
+  function impulse(seconds) {
+    const len = Math.floor(ctx.sampleRate * seconds), buf = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) { const d = buf.getChannelData(ch); let lp = 0;
+      for (let i = 0; i < len; i++) { lp += ((Math.random() * 2 - 1) - lp) * .35; d[i] = lp * Math.pow(1 - i / len, 2.4); } }
+    return buf;
+  }
+  function init() {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    master = ctx.createGain(); master.gain.value = 0;
+    const tone = ctx.createBiquadFilter(); tone.type = 'lowshelf'; tone.frequency.value = 180; tone.gain.value = 2;
+    const air = ctx.createBiquadFilter(); air.type = 'highshelf'; air.frequency.value = 7000; air.gain.value = -4;
+    const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 2.5; comp.attack.value = .02; comp.release.value = .4;
+    bus = ctx.createGain(); bus.connect(tone); tone.connect(air); air.connect(comp); comp.connect(master); master.connect(ctx.destination);
+    // long, dark, wide hall
+    const verb = ctx.createConvolver(); verb.buffer = impulse(5.5);
+    verbSend = ctx.createGain(); verbSend.gain.value = .9; const verbOut = ctx.createGain(); verbOut.gain.value = .55;
+    verbSend.connect(verb); verb.connect(verbOut); verbOut.connect(bus);
+    // stereo ping-pong echo, darkened each repeat
+    const dl = ctx.createDelay(2), dr = ctx.createDelay(2), fb = ctx.createGain(), dlp = ctx.createBiquadFilter();
+    dlp.type = 'lowpass'; dlp.frequency.value = 2400; fb.gain.value = .38;
+    const pl = ctx.createStereoPanner(), pr = ctx.createStereoPanner(); pl.pan.value = -.7; pr.pan.value = .7;
+    delaySend = ctx.createGain(); delaySend.gain.value = .32;
+    delaySend.connect(dl); dl.connect(pl); pl.connect(bus); dl.connect(dr); dr.connect(pr); pr.connect(bus); dr.connect(dlp); dlp.connect(fb); fb.connect(dl);
+    pl.connect(verbSend); pr.connect(verbSend);
+    dl.delayTime.value = dr.delayTime.value = .45;
+  }
+  const out = (node, pan, dry = .7, rev = .6, echo = 0) => {
+    const p = ctx.createStereoPanner(); p.pan.value = pan; node.connect(p);
+    const d = ctx.createGain(); d.gain.value = dry; p.connect(d); d.connect(bus);
+    const r = ctx.createGain(); r.gain.value = rev; p.connect(r); r.connect(verbSend);
+    if (echo) { const e = ctx.createGain(); e.gain.value = echo; p.connect(e); e.connect(delaySend); }
+  };
+  // glass keys: a soft sine body with a short bell shimmer (FM), gentle attack, long tail
+  function key(m, t, vel, pan) {
+    const f = hz(m), g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vel, t + .025); g.gain.exponentialRampToValueAtTime(vel * .35, t + .6); g.gain.exponentialRampToValueAtTime(0.0001, t + 4.5);
+    const car = ctx.createOscillator(); car.type = 'sine'; car.frequency.value = f;
+    const mod = ctx.createOscillator(); mod.type = 'sine'; mod.frequency.value = f * 3.5;
+    const mg = ctx.createGain(); mg.gain.setValueAtTime(f * 1.2, t); mg.gain.exponentialRampToValueAtTime(f * .02, t + .9);
+    mod.connect(mg); mg.connect(car.frequency);
+    const oct = ctx.createOscillator(); oct.type = 'sine'; oct.frequency.value = f * 2; const og = ctx.createGain(); og.gain.value = .12;
+    car.connect(g); oct.connect(og); og.connect(g);
+    out(g, pan, .6, .75, .55);
+    const end = t + 4.8; [car, mod, oct].forEach(o => { o.start(t); o.stop(end); });
+  }
+  // pad: detuned voices through a slowly opening filter, swelling in and out with the chord
+  function pad(chord, t, dur) {
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = .7;
+    lp.frequency.setValueAtTime(300, t); lp.frequency.linearRampToValueAtTime(1300, t + dur * .55); lp.frequency.linearRampToValueAtTime(500, t + dur * 1.1);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(.05, t + dur * .35); g.gain.linearRampToValueAtTime(.035, t + dur * .8); g.gain.linearRampToValueAtTime(0.0001, t + dur * 1.15);
+    lp.connect(g); out(g, 0, .5, .8);
+    chord.slice(1, 5).forEach((m, i) => [-7, 7].forEach(dt => {
+      const o = ctx.createOscillator(); o.type = i % 2 ? 'triangle' : 'sawtooth'; o.frequency.value = hz(m); o.detune.value = dt;
+      const vg = ctx.createGain(); vg.gain.value = o.type === 'sawtooth' ? .18 : .3; o.connect(vg); vg.connect(lp); o.start(t); o.stop(t + dur * 1.2);
+    }));
+  }
+  function sub(m, t, dur) {
+    const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = hz(m);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(.16, t + .4); g.gain.linearRampToValueAtTime(.1, t + dur * .7); g.gain.linearRampToValueAtTime(0.0001, t + dur * 1.05);
+    o.connect(g); g.connect(bus); o.start(t); o.stop(t + dur * 1.1);
+  }
+  function schedule() {
+    while (nextTime < ctx.currentTime + .2) {
+      if (step === 0 && pending !== section) { section = pending; bar = 0; }
+      const song = SONGS[section], beat = 60 / song.bpm / 2, chord = song.chords[bar % song.chords.length], barLen = beat * 8;
+      if (step === 0) { pad(chord, nextTime, barLen); sub(chord[0], nextTime, barLen); }
+      // sparse, slightly random figure over the upper voices; never the same bar twice
+      const upper = chord.slice(2), play = step === 0 || (step % 2 === 0 ? Math.random() < .7 : Math.random() < .28);
+      if (play) {
+        const m = upper[Math.floor(Math.random() * upper.length)] + (Math.random() < .35 ? 12 : 0);
+        key(m, nextTime + (Math.random() - .5) * .02, step === 0 ? .09 : .045 + Math.random() * .035, (Math.random() - .5) * .8);
+      }
+      nextTime += beat; step++;
+      if (step === 8) { step = 0; bar++; }
+    }
+  }
+  function fade(to, secs) { const t = ctx.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.linearRampToValueAtTime(to, t + secs); }
+  function setOn(v) {
+    on = v; btn.setAttribute('aria-pressed', String(on)); label.textContent = on ? 'Sound on' : 'Sound off';
+    if (on) {
+      if (!ctx) init();
+      ctx.resume(); if (!timer) { bar = 0; step = 0; nextTime = ctx.currentTime + .1; timer = setInterval(schedule, 25); }
+      fade(.6, 2.5);
+    } else if (ctx) {
+      fade(0, 1.2); setTimeout(() => { if (!on) { clearInterval(timer); timer = null; ctx.suspend(); } }, 1300);
+    }
+  }
+  btn.addEventListener('click', () => setOn(!on));
+  addEventListener('crystal:section', (e) => { pending = e.detail; });
+  document.addEventListener('visibilitychange', () => { if (!ctx || !on) return; document.hidden ? ctx.suspend() : ctx.resume(); });
+})();
+</script>
+</body>
+</html>

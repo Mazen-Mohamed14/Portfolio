@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mazen Mohamed, full stack developer</title>
+<meta name="description" content="Mazen Mohamed builds SaaS and e-commerce products end to end, in Cairo.">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="page.css">
+</head>
+<body>
+
+<nav class="nav" aria-label="Primary">
+  <a class="wordmark" href="#top">Mazen Mohamed</a>
+  <span class="nav-links"><a href="#work">Work</a><a href="#trueform">TrueForm</a><a href="#arabic">Arabic</a></span>
+  <a class="key key--primary" href="#contact">Contact</a>
+</nav>
+
+<header class="hero" id="top">
+  <canvas class="field" role="img" aria-label="Three layers, database, API and interface, turning as one block, drawn in characters, with raw requests streaming in from the left"></canvas>
+  <div class="container">
+    <h1>From database to deploy.</h1>
+    <p class="lead">Mazen Mohamed builds SaaS and e-commerce products end to end, in Cairo.</p>
+    <div class="actions">
+      <a class="key key--primary" href="mailto:mazen.mohamed.saeed14@gmail.com">Email Mazen</a>
+      <a class="key" href="#work">See the work</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="qa container" id="work">
+    <h2>What has he shipped?</h2>
+    <div class="body">
+      <table class="work">
+        <thead><tr><th scope="col">Project</th><th scope="col">What it is</th><th scope="col">Built with</th><th scope="col">For</th></tr></thead>
+        <tbody>
+          <tr class="on"><td class="name">TrueForm</td><td>Multi-tenant form and exam builder with AI grading</td><td>Next.js, NestJS, PostgreSQL</td><td class="for">Cultiv</td></tr>
+          <tr><td class="name">DietHub</td><td>Portal revamp; organic traffic up 320% in six months</td><td>React, Tailwind CSS</td><td class="for">Cultiv</td></tr>
+          <tr><td class="name">Bureau</td><td>Bilingual corporate site, custom animation</td><td>React, Tailwind CSS</td><td class="for">Cultiv</td></tr>
+          <tr><td class="name">TrueAgent</td><td>AI agent platform frontend, in progress</td><td>Next.js, TypeScript</td><td class="for">Cultiv</td></tr>
+          <tr><td class="name">Riverty</td><td>Buy now, pay later checkout extension</td><td>Magento, PrestaShop</td><td class="for">Scandiweb</td></tr>
+        </tbody>
+      </table>
+      <p class="note">The prominent ones; more on request.</p>
+    </div>
+  </section>
+
+  <section class="band-graphite" id="trueform">
+    <div class="container">
+      <h2>What did he build inside TrueForm?</h2>
+      <p class="lead">A webhook builder. Each tenant writes a LiquidJS template; TrueForm renders it for every submission.</p>
+      <div class="mapping body">
+        <figure class="pane" id="pane-in">
+          <figcaption>webhook.liquid</figcaption>
+<pre><code><span class="ln">{</span><span class="ln" data-m="1">  "form": "<span class="tok">{{ form.title }}</span>",</span><span class="ln" data-m="2">  "name": "<span class="tok">{{ answers.full_name | strip }}</span>",</span><span class="ln" data-m="3">  "score": <span class="tok">{{ exam.score }}</span>,</span><span class="ln" data-m="4">  "sent": "<span class="tok">{{ submitted_at | date: '%Y-%m-%d' }}</span>"</span><span class="ln">}</span></code></pre>
+        </figure>
+        <svg class="wire" aria-hidden="true" focusable="false"></svg>
+        <figure class="pane" id="pane-out">
+          <figcaption>Request sent to example.com</figcaption>
+<pre><code><span class="ln"><span class="tok">POST</span> https://example.com/hooks/forms</span><span class="ln cm">Content-Type: application/json</span><span class="ln"> </span><span class="ln">{</span><span class="ln" data-m="1">  "form": "Driver induction",</span><span class="ln" data-m="2">  "name": "Mona Adel",</span><span class="ln" data-m="3">  "score": 86,</span><span class="ln" data-m="4">  "sent": "2026-10-23"</span><span class="ln">}</span></code></pre>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="qa qa--wide container">
+    <h2>How does he keep it from breaking?</h2>
+    <div class="stat body">
+      <span class="figure">70</span>
+      <p>Playwright browser tests cover TrueForm’s regressions, alongside Vitest and Jest unit tests and PostgreSQL integration tests.</p>
+    </div>
+  </section>
+
+  <section class="band-paper" id="arabic">
+    <div class="container rtl">
+      <div>
+        <h2>Can he build it in Arabic?</h2>
+        <p class="lead">TrueForm and Bureau ship in English and Arabic, right to left included.</p>
+        <div class="body">
+          <div class="tray" role="group" aria-label="Form language">
+            <button class="key" type="button" data-lang="en" aria-pressed="true">English</button>
+            <button class="key" type="button" data-lang="ar" aria-pressed="false" lang="ar">العربية</button>
+          </div>
+          <small>Switch it: the layout mirrors, not just the words.</small>
+        </div>
+      </div>
+      <div class="formcard" id="demo" lang="en" dir="ltr">
+        <span class="step" data-t="step">Step 1 of 3</span>
+        <div class="meter" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+        <h3 data-t="title">Job application</h3>
+        <div class="fields">
+          <label><span data-t="name">Full name</span><input type="text" autocomplete="name" data-p="nameP" placeholder="Mona Adel"></label>
+          <label><span data-t="phone">Phone number</span><input type="tel" autocomplete="tel" dir="ltr" placeholder="+20 100 000 0000"></label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="qa qa--wide container">
+    <h2>What does he work with?</h2>
+    <div class="stack body">
+      <div><h3>Interface</h3><ul><li>React</li><li>Next.js App Router</li><li>Tailwind CSS</li><li>TanStack Query</li></ul></div>
+      <div><h3>Server</h3><ul><li>Node.js</li><li>NestJS</li><li>Prisma</li><li>Stripe and OpenAI APIs</li></ul></div>
+      <div><h3>Data</h3><ul><li>PostgreSQL</li><li>MySQL</li><li>MongoDB</li><li>Redis</li></ul></div>
+      <div><h3>Shipping</h3><ul><li>Playwright</li><li>Docker</li><li>GitHub Actions</li><li>Vercel</li></ul></div>
+    </div>
+  </section>
+
+  <section class="qa qa--wide container" id="contact">
+    <h2>Where is he based?</h2>
+    <p class="lead">Cairo, Egypt. Two years remote with a team in Latvia; at Cultiv since March 2024.</p>
+    <div class="reach body">
+      <a class="mail" href="mailto:mazen.mohamed.saeed14@gmail.com">mazen.mohamed.saeed14@gmail.com</a>
+      <table class="facts"><tbody>
+        <tr><th scope="row">Phone</th><td><a href="tel:+201142280788">+20 114 228 0788</a></td></tr>
+        <tr><th scope="row">LinkedIn</th><td><a href="https://linkedin.com/in/mazenmohamed1">mazenmohamed1</a></td></tr>
+        <tr><th scope="row">GitHub</th><td><a href="https://github.com/Mazen-Mohamed14">Mazen-Mohamed14</a></td></tr>
+        <tr><th scope="row">Speaks</th><td>Arabic, English, some French</td></tr>
+      </tbody></table>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="container">
+    <p class="mast">Mazen Mohamed</p>
+    <div class="foot-row">
+      <span>Full stack developer, Cairo. Designed and built by hand, 2026.</span>
+      <nav aria-label="Footer"><a href="mailto:mazen.mohamed.saeed14@gmail.com">Email</a><a href="https://linkedin.com/in/mazenmohamed1">LinkedIn</a><a href="https://github.com/Mazen-Mohamed14">GitHub</a></nav>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* the field: three layers turning, raw requests streaming in */
+(() => {
+  const cv = document.querySelector('.field');
+  const ctx = cv.getContext('2d');
+  const css = getComputedStyle(document.documentElement);
+  const tok = (n) => css.getPropertyValue(n).trim();
+  const tints = ['--color-glyph-1', '--color-glyph-2', '--color-glyph-3', '--color-glyph-4', '--color-accent-deep'].map(tok);
+  const ramp = ' .:-=+*#%@';
+  const CW = 8, CH = 16;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W = 0, H = 0, cols = 0, rows = 0, dpr = 1, mx = -1e4, my = -1e4, running = true, last = 0, t0 = performance.now();
+
+  const hash = (x, y) => { const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return s - Math.floor(s); };
+  const noise = (x, y) => {
+    const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi;
+    const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+    const a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1);
+    return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+  };
+  const HX = 1.05, HY = 0.19, HZ = 1.05, R = 0.05;
+  const sdBox = (x, y, z) => {
+    const qx = Math.abs(x) - HX + R, qy = Math.abs(y) - HY + R, qz = Math.abs(z) - HZ + R;
+    const ox = Math.max(qx, 0), oy = Math.max(qy, 0), oz = Math.max(qz, 0);
+    return Math.hypot(ox, oy, oz) + Math.min(Math.max(qx, qy, qz), 0) - R;
+  };
+
+  function size() {
+    const r = cv.getBoundingClientRect();
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    W = r.width; H = r.height; cols = Math.ceil(W / CW); rows = Math.ceil(H / CH);
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.font = '500 13px ' + tok('--font-outlier');
+    ctx.textBaseline = 'top';
+  }
+
+  function frame(t) {
+    const narrow = W < 960;
+    const ocx = narrow ? W * 0.62 : W * 0.7, ocy = narrow ? H * 0.3 : H * 0.46;
+    const S = narrow ? Math.min(W * 0.2, H * 0.12) : Math.min(H * 0.19, W * 0.15);
+    const a = t * 0.45, tilt = 0.52, ca = Math.cos(a), sa = Math.sin(a), ct = Math.cos(tilt), st = Math.sin(tilt);
+    const gap = 0.6 + 0.06 * Math.sin(t * 0.9);
+    const L = [-0.45, 0.78, 0.43];
+    const buckets = [[], [], [], [], []];
+    const calmX = narrow ? W : W * 0.56, calmY = narrow ? H * 0.5 : H * 0.42;
+
+    for (let r = 0; r < rows; r++) {
+      const py = r * CH + CH / 2;
+      for (let c = 0; c < cols; c++) {
+        const px = c * CW + CW / 2;
+        let v = 0, hitLayer = -1;
+        const X = (px - ocx) / S, Y = -(py - ocy) / S;
+        if (X * X + Y * Y < 3.4) {
+          /* ray from the viewer, into object space: undo the tilt, then the turn */
+          let oy = Y * ct - 4 * st, oz = Y * st + 4 * ct;
+          let dy = -(-st), dz = -ct;
+          let ox = X * ca - oz * sa, ozz = X * sa + oz * ca;
+          let dx = -dz * sa, dzz = dz * ca;
+          let d = 0, hit = false, hx = 0, hy = 0, hz = 0, layer = 0;
+          for (let i = 0; i < 30; i++) {
+            const x = ox + dx * d, y = oy + dy * d, z = ozz + dzz * d;
+            let m = 1e9;
+            for (let k = 0; k < 3; k++) { const e = sdBox(x, y - (k - 1) * gap, z); if (e < m) { m = e; layer = k; } }
+            if (m < 0.01) { hit = true; hx = x; hy = y - (layer - 1) * gap; hz = z; break; }
+            d += m; if (d > 8) break;
+          }
+          if (hit) {
+            const ax = Math.abs(hx) / HX, ay = Math.abs(hy) / HY, az = Math.abs(hz) / HZ;
+            let nx = 0, ny = 0, nz = 0;
+            if (ax >= ay && ax >= az) nx = Math.sign(hx); else if (ay >= az) ny = Math.sign(hy); else nz = Math.sign(hz);
+            /* normal back to view space: turn, then tilt */
+            const tx = nx * ca + nz * sa, tz = -nx * sa + nz * ca;
+            const wy = ny * ct + tz * st, wz = -ny * st + tz * ct;
+            const lam = Math.max(0, tx * L[0] + wy * L[1] + wz * L[2]);
+            const edge = (ax > 0.93) + (ay > 0.8) + (az > 0.93) >= 2 ? 0.25 : 0;
+            v = Math.min(1, 0.18 + 0.7 * lam + edge + (layer === 2 ? 0.06 : 0));
+            hitLayer = layer;
+          }
+        }
+        if (hitLayer < 0) {
+          /* raw traffic, dense toward the block, thin where the words sit */
+          const toward = Math.max(0, 1 - Math.abs(py - ocy) / (H * 0.42)) * Math.min(1, px / ocx);
+          let n = noise(c * 0.09 - t * 1.1, r * 0.24 + Math.sin(c * 0.03 + t * 0.4) * 0.6);
+          v = Math.max(0, n - 0.5) * 1.6 * (0.25 + 0.75 * toward);
+          if (px > ocx + S * 1.9) v *= 0.25;
+          if (px < calmX && py > calmY) v *= 0.12;
+          if (v < 0.06) v = 0;
+        }
+        const dl = Math.hypot(px - mx, py - my);
+        if (dl < 96 && v > 0) v = Math.min(1, v + 0.4 * (1 - dl / 96));
+        if (v <= 0) continue;
+        const ch = ramp[Math.max(1, Math.min(9, Math.round(v * 9)))];
+        const b = v < 0.22 ? 0 : v < 0.42 ? 1 : v < 0.62 ? 2 : v < 0.86 ? 3 : 4;
+        buckets[hitLayer < 0 && b > 3 ? 3 : b].push(ch, px - CW / 2, py - CH / 2);
+      }
+    }
+    ctx.clearRect(0, 0, W, H);
+    for (let b = 0; b < 5; b++) {
+      const arr = buckets[b]; if (!arr.length) continue;
+      ctx.fillStyle = tints[b];
+      for (let i = 0; i < arr.length; i += 3) ctx.fillText(arr[i], arr[i + 1], arr[i + 2]);
+    }
+  }
+
+  function loop(now) {
+    if (!running) return;
+    if (now - last > 33) { last = now; frame((now - t0) / 1000); }
+    requestAnimationFrame(loop);
+  }
+  function start() { if (!running && !reduce) { running = true; requestAnimationFrame(loop); } }
+
+  document.fonts.ready.then(() => {
+    size();
+    if (reduce) { running = false; frame(1.4); return; }
+    requestAnimationFrame(loop);
+  });
+  addEventListener('resize', () => { size(); if (reduce) frame(1.4); });
+  cv.parentElement.addEventListener('pointermove', (e) => { const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; });
+  cv.parentElement.addEventListener('pointerleave', () => { mx = my = -1e4; });
+  new IntersectionObserver(([e]) => { if (e.isIntersecting) start(); else running = false; }).observe(cv);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) running = false; else start(); });
+})();
+
+/* the mapping: hairline elbows between matched lines, drawn once */
+(() => {
+  const svg = document.querySelector('.wire');
+  const inn = document.getElementById('pane-in'), out = document.getElementById('pane-out');
+  function draw() {
+    if (getComputedStyle(svg).display === 'none') return;
+    const box = svg.getBoundingClientRect(), w = box.width;
+    let html = '';
+    for (const a of inn.querySelectorAll('[data-m]')) {
+      const b = out.querySelector(`[data-m="${a.dataset.m}"]`);
+      const ya = a.getBoundingClientRect(), yb = b.getBoundingClientRect();
+      const y1 = ya.top + ya.height / 2 - box.top, y2 = yb.top + yb.height / 2 - box.top;
+      html += `<path pathLength="1" d="M0 ${y1} H${w / 2} V${y2} H${w}"/><circle cx="0" cy="${y1}" r="2"/><circle cx="${w}" cy="${y2}" r="2"/>`;
+    }
+    svg.innerHTML = html;
+  }
+  document.fonts.ready.then(draw);
+  addEventListener('resize', draw);
+  new IntersectionObserver(([e], o) => { if (e.isIntersecting) { svg.classList.add('drawn'); o.disconnect(); } }, { threshold: 0.4 }).observe(svg);
+})();
+
+/* the language control */
+(() => {
+  const demo = document.getElementById('demo');
+  const text = {
+    en: { step: 'Step 1 of 3', title: 'Job application', name: 'Full name', phone: 'Phone number', nameP: 'Mona Adel' },
+    ar: { step: 'الخطوة 1 من 3', title: 'طلب توظيف', name: 'الاسم الكامل', phone: 'رقم الهاتف', nameP: 'منى عادل' },
+  };
+  const keys = document.querySelectorAll('[data-lang]');
+  keys.forEach((k) => k.addEventListener('click', () => {
+    const l = k.dataset.lang;
+    keys.forEach((o) => o.setAttribute('aria-pressed', String(o === k)));
+    demo.lang = l; demo.dir = l === 'ar' ? 'rtl' : 'ltr';
+    demo.querySelectorAll('[data-t]').forEach((n) => { n.textContent = text[l][n.dataset.t]; });
+    demo.querySelectorAll('[data-p]').forEach((n) => { n.placeholder = text[l][n.dataset.p]; });
+  }));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#03050c">
+<title>Aether · Crystal study</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03050c;color:#e5edf9;font-family:system-ui,sans-serif}
+#gl{display:block;width:100%;height:100%;touch-action:pan-y}header{position:fixed;left:clamp(24px,5vw,72px);top:clamp(24px,5vh,54px);pointer-events:none}
+.eyebrow{font-size:10px;letter-spacing:.32em;color:#8594ac;text-transform:uppercase}h1{font:300 clamp(29px,4vw,48px)/1.15 Georgia,serif;letter-spacing:.14em;margin:12px 0}header p{font-size:11px;color:#738198;letter-spacing:.08em}
+.controls{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:18px;padding:14px 20px;border:1px solid #aacaff1c;background:#080d18c4;border-radius:18px;backdrop-filter:blur(18px)}
+.swatches{display:flex;gap:9px}button,input{cursor:pointer}button{color:#aebed2;background:transparent;border:1px solid #abc7ef2a;border-radius:50%;width:25px;height:25px;padding:0}
+.swatch{background:var(--c);width:15px;height:15px;border:3px solid #09101b;outline:1px solid #8ca8ce44}.swatch[aria-pressed=true]{outline:1px solid #e6f3ff;box-shadow:0 0 13px #b3ddff55}
+label{display:flex;align-items:center;gap:9px;font-size:10px;color:#a6b4c9;letter-spacing:.08em;white-space:nowrap}input[type=range]{width:76px;accent-color:#b3d9ed;height:3px}input[type=color]{width:20px;height:22px;padding:0;background:none;border:0}
+#pause{font-size:11px;border-radius:7px;width:29px;height:27px}button:focus-visible,input:focus-visible{outline:2px solid #c5ebff;outline-offset:5px}
+.caption{position:fixed;right:30px;top:37px;font-size:9px;letter-spacing:.2em;color:#63748d;writing-mode:vertical-rl;pointer-events:none}
+#status{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font-size:13px;color:#adbdd3;text-align:center;max-width:320px}
+@media(max-width:520px){.controls{gap:11px;padding:13px 15px;bottom:20px}header p{display:none}.caption{right:20px}.eyebrow{font-size:9px}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head>
+<body>
+<canvas id="gl" aria-label="A slowly turning, internally luminous faceted crystal against a dark nebula"></canvas>
+<header><div class="eyebrow">Material study / 01</div><h1>AETHER</h1><p>Light held in a lattice.</p></header>
+<div class="caption">MOVE TO EXPLORE · A CRYSTAL STUDY</div>
+<div class="controls" aria-label="Crystal appearance">
+<div class="swatches">
+<button class="swatch" style="--c:#91d9ff" data-color="#91d9ff" aria-label="Glacial blue" aria-pressed="true"></button>
+<button class="swatch" style="--c:#ad83ff" data-color="#ad83ff" aria-label="Amethyst" aria-pressed="false"></button>
+<button class="swatch" style="--c:#6dffc3" data-color="#6dffc3" aria-label="Emerald" aria-pressed="false"></button>
+<button class="swatch" style="--c:#ffd598" data-color="#ffd598" aria-label="Amber" aria-pressed="false"></button>
+</div>
+<label title="Crystal colour"><input id="colour" type="color" value="#91d9ff" aria-label="Custom crystal colour"></label>
+<label>Pearl <input id="opal" type="range" min="0" max="1" step=".01" value=".32" aria-label="Opalescent sheen amount"></label>
+<button id="pause" aria-label="Pause rotation" aria-pressed="false">Ⅱ</button>
+</div>
+<div id="status" role="status">Gathering light…</div>
+<script type="module">
+const status = document.getElementById('status');
+try {
+const THREE = await import('three');
+const [{EffectComposer},{RenderPass},{UnrealBloomPass},{OutputPass}] = await Promise.all([
+  import('three/addons/postprocessing/EffectComposer.js'),
+  import('three/addons/postprocessing/RenderPass.js'),
+  import('three/addons/postprocessing/UnrealBloomPass.js'),
+  import('three/addons/postprocessing/OutputPass.js')
+]);
+const mobile = matchMedia('(pointer: coarse)').matches || innerWidth < 720;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('gl'),antialias:false,alpha:false,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.25 : 1.65));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.setClearColor(0x03050c);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(33,1,.1,60);
+camera.position.set(0,.35,12);
+camera.lookAt(0,.4,0);
+// Shared appearance controls. THREE.Color values are in linear working space.
+// Integration: crystalStudy.uniforms.uC.value.set('#ad83ff');
+//              crystalStudy.uniforms.uIri.value = 0.8;
+const U = {
+  uC:{value:new THREE.Color('#91d9ff')}, uIri:{value:.32},
+  uT:{value:0}, uAspect:{value:1}, uEye:{value:new THREE.Vector3()}
+};
+const targetColour = U.uC.value.clone();
+const screenVertex = `
+varying vec2 vUv;
+void main(){vUv=uv;gl_Position=vec4(position.xy,0.9999,1.);}
+`;
+const background = new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({
+  uniforms:U,depthWrite:false,depthTest:false,vertexShader:screenVertex,
+  fragmentShader:`
+varying vec2 vUv; uniform float uT,uAspect; uniform vec3 uC;
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float noise(vec2 p){
+ vec2 i=floor(p),f=fract(p); f=f*f*(3.-2.*f);
+ return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+1.),f.x),f.y);
+}
+float fbm(vec2 p){
+ float a=.5,s=0.;
+ for(int i=0;i<4;i++){s+=a*noise(p);p=mat2(.8,-.6,.6,.8)*p*2.07+9.2;a*=.5;}return s;
+}
+void main(){
+ vec2 p=(vUv-.5)*vec2(uAspect,1.);
+ float n=fbm(p*3.+vec2(uT*.006,0.));
+ float mist=pow(max(n,0.),3.);
+ float band=exp(-pow((p.y-p.x*.37+.12)*2.5,2.));
+ vec3 col=vec3(.0018,.003,.008);
+ col+=mix(vec3(.065,.025,.15),uC*.095,.3)*mist*band;
+ col+=uC*.018*exp(-dot(p*vec2(1.5,1.),p*vec2(1.5,1.))*7.);
+ vec2 g=p*220.,id=floor(g),q=fract(g)-.5;
+ float star=step(.996,hash(id))*exp(-dot(q,q)*160.);
+ col+=vec3(.3,.4,.58)*star*(.7+.3*sin(hash(id)*40.+uT*.22));
+ col*=1.-.65*smoothstep(.3,1.2,length(p));
+ gl_FragColor=vec4(col,1.);
+}`
+}));
+background.frustumCulled=false;background.renderOrder=-100;scene.add(background);
+
+// Non-indexed triangles preserve a constant optical normal on every cut.
+// Alternating ring offsets add kite/star facets without a visible wire cage.
+function cutGeometry(){
+ const sides=12,rings=[[-1.28,.38,0],[-.48,.68,.17],[.14,.76,0],[.88,.62,.17],[1.84,.32,0]];
+ const points=rings.map(([y,r,tw])=>Array.from({length:sides},(_,i)=>{
+   const a=(i+tw)*Math.PI*2/sides;return new THREE.Vector3(Math.cos(a)*r,y,Math.sin(a)*r);
+ }));
+ const positions=[],bary=[],ids=[];
+ function triangle(a,b,c,id){
+   const normal=new THREE.Vector3().subVectors(b,a).cross(new THREE.Vector3().subVectors(c,a));
+   const centroid=new THREE.Vector3().add(a).add(b).add(c).multiplyScalar(1/3);
+   if(normal.dot(centroid)<0)[b,c]=[c,b];
+   [a,b,c].forEach((p,i)=>{positions.push(p.x,p.y,p.z);bary.push(i===0?1:0,i===1?1:0,i===2?1:0);ids.push(id);});
+ }
+ let id=0;
+ for(let i=0;i<sides;i++){
+   const j=(i+1)%sides;
+   triangle(new THREE.Vector3(0,-2,0),points[0][j],points[0][i],id++);
+   for(let k=0;k<points.length-1;k++){
+     const a=points[k],b=points[k+1];
+     if(k%2===0){triangle(a[i],a[j],b[i],id++);triangle(a[j],b[j],b[i],id++);}
+     else{triangle(a[i],a[j],b[j],id++);triangle(a[i],b[j],b[i],id++);}
+   }
+   triangle(points.at(-1)[i],points.at(-1)[j],new THREE.Vector3(0,3.25,0),id++);
+ }
+ const g=new THREE.BufferGeometry();
+ g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+ g.setAttribute('aBary',new THREE.Float32BufferAttribute(bary,3));
+ g.setAttribute('aFace',new THREE.Float32BufferAttribute(ids,1));
+ g.computeVertexNormals();g.computeBoundingSphere();return g;
+}
+const vertexShader=`
+attribute vec3 aBary; attribute float aFace;
+varying vec3 vP,vN,vWorld,vWN,vBary; varying float vFace;
+void main(){
+ vP=position;vN=normal;vBary=aBary;vFace=aFace;
+ vec4 w=modelMatrix*vec4(position,1.);vWorld=w.xyz;
+ // All object scaling is uniform, so mat3(modelMatrix) preserves normal direction.
+ vWN=normalize(mat3(modelMatrix)*normal);
+ gl_Position=projectionMatrix*viewMatrix*w;
+}`;
+const fragmentShader=`
+uniform vec3 uC,uEye;uniform float uT,uIri;
+varying vec3 vP,vN,vWorld,vWN,vBary;varying float vFace;
+const float PI=3.14159265359;
+vec3 spectrum(float x){return .55+.45*cos(6.2831853*(x+vec3(0.,.33,.67)));}
+// Procedural HDR environment: broad ceiling, long strips and a small hot source.
+// It is fixed in world space, so reflections sweep cleanly across rotating facets.
+float boxLight(vec3 d,vec3 center,vec3 axis,vec2 size,float softness){
+ vec3 c=normalize(center),x=normalize(cross(axis,c)),y=cross(c,x);
+ float facing=dot(d,c);
+ vec2 p=vec2(dot(d,x),dot(d,y))/max(facing,.08);
+ vec2 q=abs(p)-size;
+ float sd=length(max(q,0.))+min(max(q.x,q.y),0.);
+ return (1.-smoothstep(-softness,softness,sd))*smoothstep(.05,.2,facing);
+}
+vec3 env(vec3 d){
+ d=normalize(d);
+ vec3 c=vec3(.012,.021,.045)+vec3(.025,.035,.06)*max(d.y,0.);
+ c+=vec3(.85,.94,1.)*boxLight(d,vec3(-2.4,2.,3.),vec3(0,1,0),vec2(.105,.7),.035)*3.5;
+ c+=vec3(.38,.64,1.)*boxLight(d,vec3(2.8,.5,1.),vec3(0,1,0),vec2(.045,.9),.022)*2.5;
+ c+=vec3(1.,.82,.63)*boxLight(d,vec3(-.5,3.,-.5),vec3(0,0,1),vec2(.65,.16),.07)*1.7;
+ c+=vec3(.55,.42,1.)*boxLight(d,vec3(1.,-.4,-3.),vec3(0,1,0),vec2(.16,.5),.06);
+ c+=vec3(1.,.96,.9)*pow(max(dot(d,normalize(vec3(-1.,1.3,2.))),0.),350.)*5.;
+ return c;
+}
+void main(){
+ vec3 N=normalize(vN),WN=normalize(vWN);
+ vec3 V=normalize(cameraPosition-vWorld),I=normalize(vP-uEye);
+ float ndv=max(dot(WN,V),0.);
+ float fres=.055+.945*pow(1.-ndv,5.);
+ vec3 R=reflect(-V,WN);
+ vec3 reflection=env(R);
+ // Three slightly different IORs: controlled dispersion, weighted toward edges.
+ vec3 tR=refract(-V,WN,1./1.445),tG=refract(-V,WN,1./1.46),tB=refract(-V,WN,1./1.478);
+ vec3 transmitted=vec3(env(tR).r,env(tG).g,env(tB).b);
+ vec3 T=normalize(refract(I,N,1./1.46));
+ // Exit of a bounding optical ellipsoid gives a stable approximate path length.
+ vec3 radii=vec3(.8,2.85,.8),o=(vP-vec3(0,.5,0))/radii,d=T/radii;
+ float a=dot(d,d),b=dot(o,d),cc=dot(o,o)-1.;
+ float thickness=clamp((-b+sqrt(max(b*b-a*cc,0.)))/a,0.,3.5);
+ vec3 absorption=exp(-(vec3(1.)-uC)*thickness*1.55);
+ // Bent sightline through the core: nearest approach provides real parallax.
+ vec3 center=vec3(.035,-.18,0.);
+ vec3 stretch=vec3(1.,.53,1.);
+ vec3 ray=T*stretch,origin=(vP-center)*stretch;
+ float along=clamp(-dot(origin,ray)/dot(ray,ray),0.,thickness);
+ vec3 nearest=origin+ray*along;
+ float radius=length(nearest);
+ float core=exp(-radius*radius*17.);
+ float hot=exp(-radius*radius*125.);
+ // Three stationary oblique inclusion planes, intersected by the refracted ray.
+ // Angular quantization suggests a smaller, rotated lattice within the shell.
+ float lattice=0.,veils=0.;
+ for(int k=0;k<3;k++){
+   float fk=float(k);
+   vec3 pn=normalize(vec3(.34+fk*.22,.28-fk*.23,.8-fk*.18));
+   float denom=dot(T,pn);
+   float dist=(-(dot(vP,pn))+(fk-1.)*.25)/(abs(denom)<.02?.02:denom);
+   vec3 hit=vP+T*dist;
+   float gate=step(0.,dist)*step(dist,thickness)*exp(-dot(hit.xz,hit.xz)*4.)*exp(-hit.y*hit.y*.8);
+   float angle=atan(hit.z,hit.x)+fk*.43;
+   float facets=pow(max(cos(floor(angle/(PI/4.))*(PI/4.)+fk*.9+dot(V,vec3(1.,.4,.2))*2.),0.),10.);
+   lattice+=gate*facets*.5;
+   veils+=gate*(.04+.06*cos(angle*4.+hit.y*2.));
+ }
+ vec3 tint=mix(uC,vec3(1.),.22);
+ vec3 body=absorption*(transmitted*.22+uC*(.09+core*.8)+tint*lattice);
+ body+=tint*veils*.25+mix(uC,vec3(1.),.7)*hot*.9;
+ // Thin-film interference is subdued and confined to grazing angles.
+ vec3 film=spectrum(ndv*1.7+dot(vP,vec3(.16,.08,.13)));
+ float pearl=uIri*(.12+.5*pow(1.-ndv,2.));
+ body=mix(body,body*.6+film*(.12+core*.2)+vec3(.09)*core,pearl);
+ vec3 col=body*(1.-fres*.7)+reflection*(.16+fres*.84);
+ col+=film*pow(1.-ndv,3.)*.09;
+ // Subpixel bevel glint, driven by reflected light instead of an edge outline.
+ vec3 fw=max(fwidth(vBary),vec3(.00001));
+ vec3 coverage=smoothstep(vec3(0.),fw*.65,vBary);
+ float bevel=1.-min(coverage.x,min(coverage.y,coverage.z));
+ col+=bevel*min(reflection,vec3(2.))*.1;
+ gl_FragColor=vec4(col,1.);
+}`;
+const crystal=new THREE.Mesh(cutGeometry(),new THREE.ShaderMaterial({uniforms:U,vertexShader,fragmentShader}));
+const pivot=new THREE.Group();pivot.add(crystal);scene.add(pivot);
+crystal.rotation.set(.05,.28,.075);
+
+// One analytic additive billboard, behind the solid crystal: a quiet aura and
+// tapered straight rays, never orbiting ribbons. All emitted light uses uC.
+const aura=new THREE.Mesh(new THREE.PlaneGeometry(8,8),new THREE.ShaderMaterial({
+ uniforms:U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+ vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+ fragmentShader:`
+ uniform vec3 uC;varying vec2 vUv;
+ void main(){
+  vec2 p=(vUv-.5)*8.;float r=length(p);
+  float halo=exp(-r*r*1.25)*.12+exp(-r*r*.22)*.012;
+  float rays=exp(-abs(p.x)*90.)*exp(-abs(p.y)*2.)*.025
+            +exp(-abs(p.y)*140.)*exp(-abs(p.x)*2.3)*.035;
+  float alpha=(halo+rays)*(1.-smoothstep(2.5,4.,r));
+  gl_FragColor=vec4(uC,alpha);
+ }`
+}));
+aura.position.set(0,-.1,-1.2);scene.add(aura);
+
+// HDR postprocessing with explicit final output colour conversion.
+const composer=new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(1,1),.38,.55,1.05);
+composer.addPass(bloom);composer.addPass(new OutputPass());
+function resize(){
+ const w=innerWidth,h=innerHeight;
+ renderer.setSize(w,h,false);composer.setSize(w,h);
+ // Keep blur buffers at half canvas resolution. Scene retains full chosen DPR.
+ bloom.setSize(Math.max(1,Math.floor(w*renderer.getPixelRatio()*.5)),Math.max(1,Math.floor(h*renderer.getPixelRatio()*.5)));
+ camera.aspect=w/h;
+ camera.position.z=Math.max(11.6,6.3/camera.aspect);
+ camera.updateProjectionMatrix();U.uAspect.value=w/h;
+}
+addEventListener('resize',resize,{passive:true});resize();
+let mx=0,my=0,sx=0,sy=0,paused=reduced,time=0,last=performance.now();
+addEventListener('pointermove',e=>{mx=(e.clientX/innerWidth-.5)*2;my=(e.clientY/innerHeight-.5)*2;},{passive:true});
+document.documentElement.addEventListener('pointerleave',()=>{mx=my=0;});
+const pause=document.getElementById('pause');
+function syncPause(){pause.textContent=paused?'▶':'Ⅱ';pause.setAttribute('aria-pressed',String(paused));pause.setAttribute('aria-label',paused?'Resume rotation':'Pause rotation');}
+pause.onclick=()=>{paused=!paused;syncPause();};syncPause();
+const colour=document.getElementById('colour');
+function setColour(hex){
+ targetColour.set(hex);colour.value=hex;
+ document.querySelectorAll('[data-color]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.color===hex)));
+}
+document.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>setColour(b.dataset.color));
+colour.addEventListener('input',()=>setColour(colour.value));
+document.getElementById('opal').addEventListener('input',e=>{U.uIri.value=Number(e.target.value);});
+// Public, section-ready controls. Direct uniform edits remain authoritative;
+// setColour is provided when a smooth colour transition is wanted.
+window.crystalStudy={uniforms:U,setColour,renderer,scene,camera};
+// Colour interpolation only runs when a UI/API transition is requested.
+let transitioning=false;
+const originalSetColour=setColour;
+window.crystalStudy.setColour=hex=>{originalSetColour(hex);transitioning=true;};
+document.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>window.crystalStudy.setColour(b.dataset.color));
+colour.addEventListener('input',()=>{transitioning=true;});
+const localEye=new THREE.Vector3();
+renderer.debug.onShaderError=(gl,program,vs,fs)=>{
+ console.error('Crystal shader compilation:',gl.getProgramInfoLog(program),gl.getShaderInfoLog(vs),gl.getShaderInfoLog(fs));
+ status.hidden=false;status.textContent='This device could not compile the crystal shaders. See the browser console for details.';
+};
+status.hidden=true;
+renderer.setAnimationLoop(now=>{
+ const dt=Math.min((now-last)/1000,.05);last=now;
+ if(document.hidden)return;
+ if(!paused)time+=dt;
+ U.uT.value=time;
+ if(transitioning){
+  U.uC.value.lerp(targetColour,1.-Math.exp(-dt*4.));
+  if(Math.max(Math.abs(U.uC.value.r-targetColour.r),Math.abs(U.uC.value.g-targetColour.g),Math.abs(U.uC.value.b-targetColour.b))<.001){U.uC.value.copy(targetColour);transitioning=false;}
+ }
+ sx+=(mx-sx)*(1.-Math.exp(-dt*3.));sy+=(my-sy)*(1.-Math.exp(-dt*3.));
+ pivot.rotation.set(reduced ? 0 : sy*.10,0,reduced ? 0 : -sx*.08);
+ crystal.rotation.y=.28+time*.17;
+ pivot.position.y=reduced?0:Math.sin(time*.55)*.045;
+ crystal.updateWorldMatrix(true,false);
+ localEye.copy(camera.position);crystal.worldToLocal(localEye);U.uEye.value.copy(localEye);
+ composer.render();
+});
+document.getElementById('gl').addEventListener('webglcontextlost',e=>{
+ e.preventDefault();renderer.setAnimationLoop(null);status.hidden=false;
+ status.textContent='The graphics context was interrupted. Reload to restore the crystal.';
+});
+} catch(error) {
+ console.error(error);status.hidden=false;
+ status.textContent='Unable to start the crystal. A WebGL 2 browser and an internet connection to jsDelivr are required.';
+}
+</script>
+</body>
+</html>
