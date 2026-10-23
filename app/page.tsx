@@ -47,6 +47,7 @@ export default function Home() {
           <div className="card">
             <h2>The <span className="glow">stack</span></h2>
             <div className="chips">{STACK.map((s) => <span key={s}>{s}</span>)}</div>
+            <p className="workflow">Workflow: Claude Code and Codex for pairing, reviews and refactors.</p>
           </div>
         </section>
 
