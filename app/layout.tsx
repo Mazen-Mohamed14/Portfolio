@@ -1,30 +1,27 @@
-import type { Metadata } from "next";
-import { Syne, DM_Sans } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Anton, Inter } from "next/font/google";
 import "./globals.css";
 
-const syne = Syne({
-  subsets: ["latin"],
-  variable: "--font-syne",
-  weight: ["400", "600", "700", "800"],
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-  weight: ["300", "400", "500"],
-});
+const anton = Anton({ subsets: ["latin"], weight: "400", variable: "--font-anton" });
+const inter = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Mazen Mohamed — Fullstack Developer",
-  description: "Fullstack developer specializing in React, TypeScript, Tailwind CSS and Next.js",
+  metadataBase: new URL("https://mazen-mohamed.vercel.app"),
+  title: "Mazen Mohamed — Full Stack Developer",
+  description: "Mazen Mohamed builds web products from database to deploy with Next.js, React and Node.js. Based in Cairo.",
+  openGraph: {
+    title: "Mazen Mohamed — Full Stack Developer",
+    description: "Full stack developer in Cairo: Next.js, React, Node.js, NestJS, PostgreSQL.",
+    images: ["/crystal-poster.jpg"],
+  },
 };
+
+export const viewport: Viewport = { themeColor: "#04050a", viewportFit: "cover" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className={`${syne.variable} ${dmSans.variable} font-sans antialiased`}>
-        {children}
-      </body>
+    <html lang="en" className={`${anton.variable} ${inter.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }
