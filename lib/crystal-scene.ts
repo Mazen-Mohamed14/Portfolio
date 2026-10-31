@@ -16,6 +16,7 @@ export type CrystalOptions = {
 const SECTIONS = [
   { c: "#9fbfff", n: "#6b2cff", iri: 0.9, g: 1.0 }, // intro: opal white on violet nebula
   { c: "#ffb43d", n: "#8a2a08", iri: 0.35, g: 1.0 }, // work: amber
+  { c: "#ff6f91", n: "#7a0f45", iri: 0.45, g: 1.1 }, // lab: rose
   { c: "#2fe3a0", n: "#06506a", iri: 0.35, g: 1.05 }, // stack: emerald
   { c: "#2f86ff", n: "#0b2a9e", iri: 0.35, g: 1.5 }, // experience: deep blue (darker hue, lifted to match)
   { c: "#b77bff", n: "#c2338f", iri: 0.6, g: 1.4 }, // contact: amethyst (darker hue, lifted to match)
