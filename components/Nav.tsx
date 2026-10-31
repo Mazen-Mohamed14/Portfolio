@@ -5,6 +5,7 @@ import { CV_URL } from "@/lib/content";
 
 const LINKS = [
   { href: "#work", label: "Work" },
+  { href: "#lab", label: "Lab" },
   { href: "#stack", label: "Stack" },
   { href: "#experience", label: "Experience" },
   { href: "#contact", label: "Contact" },

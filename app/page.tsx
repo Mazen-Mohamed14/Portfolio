@@ -1,8 +1,9 @@
 import CrystalCanvas from "@/components/CrystalCanvas";
 import Nav from "@/components/Nav";
+import PreviewWindow from "@/components/PreviewWindow";
 import SectionDots from "@/components/SectionDots";
 import SoundToggle from "@/components/SoundToggle";
-import { CV_URL, EMAIL, GITHUB, JOBS, LINKEDIN, PROJECTS, STACK } from "@/lib/content";
+import { CV_URL, EMAIL, GITHUB, JOBS, LAB, LINKEDIN, PROJECTS, STACK } from "@/lib/content";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <Nav />
       <SectionDots />
       <SoundToggle />
+      <PreviewWindow />
 
       <main>
         <section id="top">
@@ -29,7 +31,7 @@ export default function Home() {
             <h2>Selected <span className="glow">work</span></h2>
             <ul className="list work">
               {PROJECTS.map((p) => (
-                <li key={p.name}>
+                <li key={p.name} data-preview={p.preview.id}>
                   <a href={p.url} target="_blank" rel="noopener">
                     <span className="pn">{p.name}<span className="ar" aria-hidden="true">↗</span></span>
                     {p.result && <em>{p.result}</em>}
@@ -40,6 +42,22 @@ export default function Home() {
               ))}
             </ul>
             <p className="note">The prominent ones; more on request.</p>
+          </div>
+        </section>
+
+        <section id="lab">
+          <div className="card">
+            <h2>The <span className="glow">lab</span></h2>
+            <p>Hero concepts for fictional brands, built to practise motion and polish.</p>
+            <ul className="list work lab">
+              {LAB.map((c) => (
+                <li key={c.name} data-preview={c.preview.id}>
+                  <span className="pn">{c.name}</span>
+                  <p className="pd">{c.what}</p>
+                  <p className="ps">{c.stack}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
