@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const anton = Anton({ subsets: ["latin"], weight: "400", variable: "--font-anton" });
-const inter = Inter({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-inter" });
+// bundled (Latin subset) so the build never depends on fetching from Google Fonts
+const anton = localFont({ src: "./fonts/Anton-Regular.woff2", weight: "400", variable: "--font-anton" });
+const inter = localFont({ src: "./fonts/Inter-Latin.woff2", weight: "100 900", variable: "--font-inter" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mazen-mohamed.vercel.app"),
