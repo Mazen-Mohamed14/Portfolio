@@ -3,18 +3,18 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { Music } from "@/lib/music";
 
-// the visitor's sound preference: on unless they turned it off before
+// the visitor's sound preference: off unless they turned it on before
 const KEY = "sound";
-const readPref = () => { try { return localStorage.getItem(KEY) !== "off"; } catch { return true; } };
+const readPref = () => { try { return localStorage.getItem(KEY) === "on"; } catch { return false; } };
 const subscribePref = (cb: () => void) => { addEventListener("sound-pref", cb); addEventListener("storage", cb); return () => { removeEventListener("sound-pref", cb); removeEventListener("storage", cb); }; };
 const writePref = (on: boolean) => { try { localStorage.setItem(KEY, on ? "on" : "off"); } catch {} dispatchEvent(new Event("sound-pref")); };
 
 // browsers allow audio only after a click, a finished tap or a key press
 const GESTURES = ["pointerdown", "click", "touchend", "keydown"] as const;
 
-/** Music is on by default and starts on the visitor's first interaction; the button turns it off and on. */
+/** Music is off by default; the button turns it on and off. A visitor who turned it on before gets it back on their first interaction. */
 export default function SoundToggle() {
-  const wantsSound = useSyncExternalStore(subscribePref, readPref, () => true);
+  const wantsSound = useSyncExternalStore(subscribePref, readPref, () => false);
   const [hint, setHint] = useState(false);
   const musicRef = useRef<Music | null>(null);
   const interactedRef = useRef(false);

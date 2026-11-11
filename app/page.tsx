@@ -41,7 +41,7 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <p className="note">The prominent ones; more on request.</p>
+            <p className="note">Selected projects. More on request.</p>
           </div>
         </section>
 
