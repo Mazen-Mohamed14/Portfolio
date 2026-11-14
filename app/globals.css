@@ -46,7 +46,9 @@ p.note { font-size: 14px; }
 
 .list { list-style: none; margin-top: 8px; border-top: 1px solid rgba(255,255,255,.1); }
 .list li { display: flex; justify-content: space-between; gap: 16px; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,.1); font-size: 17px; }
-.list li span:last-child { color: var(--muted); font-size: 14px; text-align: right; }
+.list li { flex-wrap: wrap; row-gap: 4px; }
+.list .jd { color: var(--muted); font-size: 14px; text-align: right; }
+.list .jr { flex-basis: 100%; margin-top: 0; font-size: 15px; line-height: 1.5; color: var(--body); max-width: none; }
 .list.work li { display: block; padding: 12px 0; }
 .list.work a { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; color: var(--fg); text-decoration: none; }
 .list.work .pn { font-size: clamp(20px,2vw,26px); color: var(--fg); text-align: left; transition: color .3s; }
@@ -137,6 +139,7 @@ p.workflow { margin-top: 16px; font-size: 14px; color: var(--muted); }
   .card { border-top: 1px solid var(--lit); }
   .card::after { inset: 0; border-radius: inherit; background: radial-gradient(ellipse 80% 90px at 50% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent); }
   .list, .list li { border-image: none; }
+  .list .jd { flex-basis: 100%; text-align: left; }
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   @media (max-width: 720px) { nav { background: rgba(8,9,16,.92); } }

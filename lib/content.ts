@@ -67,8 +67,8 @@ export const LAB: Concept[] = [
 export const STACK = ["TypeScript", "Next.js", "React", "Node.js", "NestJS", "PostgreSQL", "Prisma", "Stripe", "OpenAI", "Playwright", "Docker"];
 
 export const JOBS = [
-  { company: "Cultiv LLC", detail: "Full Stack Developer · 2024 – now · Cairo" },
-  { company: "Scandiweb", detail: "Full Stack Developer · 2022 – 2024 · Remote, Latvia" },
+  { company: "Cultiv LLC", detail: "Full Stack Developer · 2024 – now · Cairo", result: "Led the frontend of TrueForm, a multi-tenant SaaS with Stripe billing and AI-graded exams." },
+  { company: "Scandiweb", detail: "Full Stack Developer · 2022 – 2024 · Remote, Latvia", result: "Two years fully remote in a distributed European team. Delivered the PrestaShop integration of Riverty's buy-now-pay-later extension." },
 ];
 
 export const SECTION_IDS = ["top", "work", "lab", "stack", "experience", "contact"] as const;

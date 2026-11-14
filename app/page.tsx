@@ -73,7 +73,7 @@ export default function Home() {
           <div className="card">
             <h2>The <span className="glow">journey</span></h2>
             <ul className="list">
-              {JOBS.map((j) => <li key={j.company}><span>{j.company}</span><span>{j.detail}</span></li>)}
+              {JOBS.map((j) => <li key={j.company}><span>{j.company}</span><span className="jd">{j.detail}</span><p className="jr">{j.result}</p></li>)}
             </ul>
             <p>Over four years shipping production SaaS and e-commerce, and now mentoring a junior developer through code review and pairing.</p>
           </div>
