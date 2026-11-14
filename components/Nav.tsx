@@ -33,7 +33,6 @@ export default function Nav() {
 
   return (
     <nav id="nav">
-      <b>MAZEN MOHAMED</b>
       <span className={`links${open ? " open" : ""}`} id="navlinks" onClick={(e) => { if ((e.target as HTMLElement).closest("a")) setOpen(false); }}>
         {LINKS.map((l, i) => (
           <a key={l.href} href={l.href} ref={i === 0 ? firstLinkRef : undefined}>{l.label}</a>

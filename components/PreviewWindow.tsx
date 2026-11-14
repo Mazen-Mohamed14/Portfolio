@@ -5,15 +5,14 @@ import { LAB, PROJECTS } from "@/lib/content";
 
 const PREVIEWS = [...PROJECTS, ...LAB].map((p) => p.preview);
 
-/** A small browser window that follows the cursor over Work and Lab and plays a clip of the site in motion.
+/** A small window that follows the cursor over Work and Lab and plays a clip of the site in motion.
     Only on devices with a real mouse; rows mark themselves with data-preview="<id>". */
 export default function PreviewWindow() {
   const winRef = useRef<HTMLDivElement>(null);
-  const labelRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const win = winRef.current, label = labelRef.current;
-    if (!win || !label || !matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    const win = winRef.current;
+    if (!win || !matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const videos = new Map<string, HTMLVideoElement>();
     win.querySelectorAll("video").forEach((v) => videos.set(v.dataset.id!, v));
@@ -76,7 +75,6 @@ export default function PreviewWindow() {
         if (on && !reduce) { if (key !== active) v.currentTime = 0; void v.play().catch(() => {}); }
         else if (!on) v.pause();
       });
-      label.textContent = PREVIEWS.find((p) => p.id === id)?.label ?? "";
       active = id; shown = true;
       win.classList.add("show");
       kick();
@@ -145,7 +143,6 @@ export default function PreviewWindow() {
 
   return (
     <div ref={winRef} className="preview" aria-hidden="true">
-      <div className="preview-bar"><i /><i /><i /><span ref={labelRef} /></div>
       <div className="preview-screen">
         {PREVIEWS.map((p) => (
           <video key={p.id} data-id={p.id} muted loop playsInline preload="none">

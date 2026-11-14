@@ -17,8 +17,8 @@ export default function Home() {
       <main>
         <section id="top">
           <div className="card">
-            <h1>Full stack<br /><span className="glow">developer</span></h1>
-            <p>Mazen Mohamed. I build web products from database to deploy. Based in Cairo.</p>
+            <h1>Mazen<br />Mohamed<span className="glow role">Full stack developer</span></h1>
+            <p>I build web products from database to deploy.</p>
             <div className="btns">
               <a className="btn solid" href="#contact">Get in touch</a>
               <a className="btn" href={CV_URL} target="_blank" rel="noopener">Resume</a>

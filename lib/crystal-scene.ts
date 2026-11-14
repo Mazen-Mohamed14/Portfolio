@@ -158,6 +158,7 @@ export function startCrystalScene({ canvas, nav, sectionCount, onSection, onRead
   const U = {
     uT: { value: 0 }, uC: { value: new THREE.Color() }, uN: { value: new THREE.Color() },
     uIri: { value: 1 }, uGain: { value: 1 },
+    uClear: { value: 0 }, // 1 on wide screens: stars thin out toward the left, where the text sits
   };
 
   // nebula and stars on one full-screen plane behind everything
@@ -165,7 +166,7 @@ export function startCrystalScene({ canvas, nav, sectionCount, onSection, onRead
     depthWrite: false, depthTest: false, uniforms: U,
     vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.9999, 1.0); }`,
     fragmentShader: /* glsl */ `
-      uniform float uT; uniform vec3 uC, uN; varying vec2 vUv;
+      uniform float uT, uClear; uniform vec3 uC, uN; varying vec2 vUv;
       float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f);
         return mix(mix(h(i), h(i+vec2(1,0)), f.x), mix(h(i+vec2(0,1)), h(i+vec2(1,1)), f.x), f.y); }
@@ -178,7 +179,7 @@ export function startCrystalScene({ canvas, nav, sectionCount, onSection, onRead
         vec3 col = uN * pow(clouds, 3.2) * .9 * band + uC * pow(clouds, 7.) * .25 * band;
         vec2 g = vUv * vec2(260., 150.); vec2 id = floor(g);
         float s = step(.985, h(id)) * smoothstep(.5, 0., length(fract(g) - .5)) * (.5 + .5*sin(uT*2. + h(id+3.)*40.));
-        col += vec3(s) * .9;
+        col += vec3(s) * .9 * mix(1., .08 + .92 * smoothstep(.2, .62, vUv.x), uClear);
         gl_FragColor = vec4(col, 1.);
       }`,
   }));
@@ -222,11 +223,11 @@ export function startCrystalScene({ canvas, nav, sectionCount, onSection, onRead
   spGeo.setAttribute("seed", new THREE.BufferAttribute(spSeed, 1));
   const sparkles = new THREE.Points(spGeo, new THREE.ShaderMaterial({
     uniforms: { ...U, uPR: { value: renderer.getPixelRatio() } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-    vertexShader: /* glsl */ `attribute float seed; uniform float uT, uPR; varying float vA;
+    vertexShader: /* glsl */ `attribute float seed; uniform float uT, uPR, uClear; varying float vA;
       void main(){ vec3 p = position; p.y += sin(uT*.4 + seed*30.)*.25; p.xz *= 1. + .03*sin(uT + seed*9.);
         vec4 mv = modelViewMatrix * vec4(p,1.); gl_Position = projectionMatrix * mv;
         float tw = pow(.5 + .5*sin(uT*(1.5 + seed*3.) + seed*60.), 6.);
-        gl_PointSize = (1. + 3.5*tw) * uPR * (10. / -mv.z); vA = .15 + .85*tw; }`,
+        gl_PointSize = (1. + 3.5*tw) * uPR * (10. / -mv.z); vA = (.15 + .85*tw) * mix(1., .08 + .92 * smoothstep(-.6, .24, gl_Position.x / gl_Position.w), uClear); }`,
     fragmentShader: /* glsl */ `uniform vec3 uC; varying float vA;
       void main(){ vec2 q = gl_PointCoord - .5; float r = length(q); if (r > .5) discard;
         float star = max(0., 1. - abs(q.x)*14.) * max(0., 1. - abs(q.y)*2.) + max(0., 1. - abs(q.y)*14.) * max(0., 1. - abs(q.x)*2.);
@@ -313,6 +314,7 @@ export function startCrystalScene({ canvas, nav, sectionCount, onSection, onRead
     spin *= Math.exp(-dt * 2.2);
 
     const wide = innerWidth > 720;
+    U.uClear.value = wide ? 1 : 0;
     const halfW = Math.tan((camera.fov * Math.PI) / 360) * camera.position.z * camera.aspect;
     if (wide) fitS = Math.min(1, halfW / 5.6);
     const k = first || reduce ? 1 : Math.min(1, dt * 4); // ease toward the fitted size instead of jumping
